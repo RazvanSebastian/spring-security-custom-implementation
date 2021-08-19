@@ -1,0 +1,15 @@
+package edu.custom.spring.security.security.authentication;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class BasicAuthenticationPayload {
+
+    private String principal;
+    private String credentials;
+
+}
