@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -23,16 +25,19 @@ import java.util.List;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final List<String> pathsToSkip;
+    private final String logoutPath;
     private final BasicAuthenticationProvider basicAuthenticationProvider;
     private final JwtHandlerService jwtHandlerService;
 
     @Autowired
     public SecurityConfiguration(
-            final BasicAuthenticationProvider basicAuthenticationProvider,
             final @Value("#{'${security.paths.to.skip}'.split(',')}") List<String> pathsToSkip,
+            final @Value("${security.paths.logout}") String logoutPath,
+            final BasicAuthenticationProvider basicAuthenticationProvider,
             JwtHandlerService jwtHandlerService) {
-        this.basicAuthenticationProvider = basicAuthenticationProvider;
         this.pathsToSkip = pathsToSkip;
+        this.logoutPath = logoutPath;
+        this.basicAuthenticationProvider = basicAuthenticationProvider;
         this.jwtHandlerService = jwtHandlerService;
     }
 
@@ -45,14 +50,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/resource/**").hasAnyAuthority("ROLE_ADMIN_WRITE")
                 .antMatchers(HttpMethod.GET, "/resource/**").hasAnyAuthority("ROLE_ADMIN_READ", "ROLE_USER_READ")
-                .antMatchers(HttpMethod.GET, "/auth/details").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilter(new AuthorizationFilter(authenticationManager(), jwtHandlerService))
                 // We are using our custom filter instead of default UsernamePasswordAuthenticationFilter implementation
-                .addFilterBefore(basicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(basicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .logout(logoutHandler());
     }
 
     @Override
@@ -63,6 +68,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private BasicAuthenticationFilter basicAuthenticationFilter(final AuthenticationManager authenticationManager) {
         final RequestMatcher requestMatcher = new AntPathRequestMatcher("/auth", HttpMethod.POST.toString());
         return new BasicAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
+    }
+
+    private Customizer<LogoutConfigurer<HttpSecurity>> logoutHandler() {
+        return (LogoutConfigurer<HttpSecurity> logoutConfigurer) ->
+                logoutConfigurer
+                        .logoutUrl(logoutPath)
+                        .invalidateHttpSession(true)
+                        .deleteCookies(CookiesUtils.getJwtCookieName())
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.getWriter().write("Logout successfully!");
+                            response.getWriter().flush();
+                        });
+
     }
 
 }

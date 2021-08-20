@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * POJO class used on exchange of user credentials for a JWT access token.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

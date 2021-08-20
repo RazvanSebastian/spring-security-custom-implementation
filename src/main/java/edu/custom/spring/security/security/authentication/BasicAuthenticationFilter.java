@@ -18,13 +18,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class BasicAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final JwtHandlerService jwtHandlerService;
 
     public BasicAuthenticationFilter(
             RequestMatcher requiresAuthenticationRequestMatcher,
             AuthenticationManager authenticationManager,
-            JwtHandlerService jwtHandlerService
-    ) {
+            JwtHandlerService jwtHandlerService) {
         super(requiresAuthenticationRequestMatcher, authenticationManager);
         this.jwtHandlerService = jwtHandlerService;
     }
@@ -36,10 +37,8 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationProcessingF
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        Cookie cookie = new Cookie(CookiesUtils.getJwtCookieName(), jwtHandlerService.generateAccessToken(authResult));
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
+        Cookie cookie = CookiesUtils.createAccessTokenCookie(jwtHandlerService.generateAccessToken(authResult), false);
         response.addCookie(cookie);
     }
 
@@ -49,8 +48,7 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationProcessingF
     }
 
     private UsernamePasswordAuthenticationToken extractUserCredentials(final HttpServletRequest request) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        BasicAuthenticationPayload authenticationPayload = objectMapper.readValue(request.getInputStream(), BasicAuthenticationPayload.class);
+        BasicAuthenticationPayload authenticationPayload = OBJECT_MAPPER.readValue(request.getInputStream(), BasicAuthenticationPayload.class);
         final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 authenticationPayload.getPrincipal(),
                 authenticationPayload.getCredentials()
