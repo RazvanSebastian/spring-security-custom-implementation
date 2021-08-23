@@ -3,15 +3,12 @@ package edu.custom.spring.security.security;
 
 import javax.servlet.http.Cookie;
 
-public class CookiesUtils {
+public class SecurityUtils {
 
-    private static final String JWT_COOKIE_NAME = "access_token";
+    public static final String JWT_COOKIE_NAME = "access_token";
+    public static final String CSRF_HEADER_NAME = "CSRF_TOKEN";
+    public static final String CSRF_JWT_CLAIM_HEADER_NAME = "CSRF_TOKEN_CLAIM";
 
-    /**
-     * @param accessToken - generated jwt or null on invalidating case.
-     * @param isInvalid   - true: set the cookie maxAge with 0 in order to be removed from browser.
-     * @return
-     */
     public static Cookie createAccessTokenCookie(final String accessToken, final boolean isInvalid) {
         Cookie cookie = new Cookie(JWT_COOKIE_NAME, accessToken);
         cookie.setHttpOnly(true);
@@ -20,10 +17,6 @@ public class CookiesUtils {
             cookie.setMaxAge(0);
         }
         return cookie;
-    }
-
-    public static String getJwtCookieName() {
-        return JWT_COOKIE_NAME;
     }
 
 }

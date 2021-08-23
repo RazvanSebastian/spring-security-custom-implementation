@@ -3,6 +3,7 @@ package edu.custom.spring.security.security;
 import edu.custom.spring.security.security.authentication.BasicAuthenticationFilter;
 import edu.custom.spring.security.security.authentication.BasicAuthenticationProvider;
 import edu.custom.spring.security.security.authorization.AuthorizationFilter;
+import edu.custom.spring.security.security.authorization.StatelessCsrfFilter;
 import edu.custom.spring.security.security.jwt.JwtHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,11 +16,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.List;
+
+import static edu.custom.spring.security.security.SecurityUtils.JWT_COOKIE_NAME;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -54,9 +58,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(new AuthorizationFilter(authenticationManager(), jwtHandlerService))
                 // We are using our custom filter instead of default UsernamePasswordAuthenticationFilter implementation
                 .addFilterBefore(basicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new AuthorizationFilter(jwtHandlerService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new StatelessCsrfFilter(), AuthorizationFilter.class)
                 .logout(logoutHandler());
     }
 
@@ -75,7 +80,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 logoutConfigurer
                         .logoutUrl(logoutPath)
                         .invalidateHttpSession(true)
-                        .deleteCookies(CookiesUtils.getJwtCookieName())
+                        .deleteCookies(JWT_COOKIE_NAME)
                         .logoutSuccessHandler((request, response, authentication) -> {
                             response.getWriter().write("Logout successfully!");
                             response.getWriter().flush();

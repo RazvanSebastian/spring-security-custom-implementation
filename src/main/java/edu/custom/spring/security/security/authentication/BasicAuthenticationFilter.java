@@ -1,7 +1,7 @@
 package edu.custom.spring.security.security.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.custom.spring.security.security.CookiesUtils;
+import edu.custom.spring.security.security.SecurityUtils;
 import edu.custom.spring.security.security.jwt.JwtHandlerService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +16,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
+
+import static edu.custom.spring.security.security.SecurityUtils.CSRF_HEADER_NAME;
 
 public class BasicAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -38,7 +41,10 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationProcessingF
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        Cookie cookie = CookiesUtils.createAccessTokenCookie(jwtHandlerService.generateAccessToken(authResult), false);
+        final String csrfToken = generateCsrfToken();
+        final String jwtToken = jwtHandlerService.generateAccessToken(authResult, csrfToken);
+        Cookie cookie = SecurityUtils.createAccessTokenCookie(jwtToken, false);
+        response.addHeader(CSRF_HEADER_NAME, csrfToken);
         response.addCookie(cookie);
     }
 
@@ -54,6 +60,10 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationProcessingF
                 authenticationPayload.getCredentials()
         );
         return usernamePasswordAuthenticationToken;
+    }
+
+    private String generateCsrfToken(){
+        return String.valueOf(UUID.randomUUID());
     }
 
 }
