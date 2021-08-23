@@ -1,12 +1,7 @@
 package edu.custom.spring.security.security.authorization;
 
-import edu.custom.spring.security.security.authorization.handler.CustomAccessDeniedException;
-import edu.custom.spring.security.security.authorization.handler.CustomAccessDeniedHandler;
+import edu.custom.spring.security.security.authorization.handler.AuthorizationDeniedHandler;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,9 +18,10 @@ import static edu.custom.spring.security.security.SecurityUtils.CSRF_JWT_CLAIM_H
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 public class StatelessCsrfFilter extends OncePerRequestFilter {
+    private static final String CSRF_TOKEN_ERROR_MSG = "Missing or non-matching CSRF-token.";
 
     private final RequestMatcher requestMatcher = new DefaultRequiresCsrfMatcher();
-    private AccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
+    private AuthorizationDeniedHandler accessDeniedHandler = new AuthorizationDeniedHandler();
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -36,11 +32,7 @@ public class StatelessCsrfFilter extends OncePerRequestFilter {
             final String csrfFromAccessToken = httpServletResponse.getHeader(CSRF_JWT_CLAIM_HEADER_NAME);
             if (isEmpty(csrfFromHeader) || isEmpty(csrfFromAccessToken) || !csrfFromHeader.equals(csrfFromAccessToken)) {
                 httpServletResponse.setHeader(CSRF_JWT_CLAIM_HEADER_NAME, null);
-                SecurityContextHolder.clearContext();
-                accessDeniedHandler.handle(
-                        httpServletRequest,
-                        httpServletResponse,
-                        new CustomAccessDeniedException("Missing or non-matching CSRF-token.", HttpStatus.FORBIDDEN));
+                accessDeniedHandler.handle(httpServletResponse, HttpStatus.FORBIDDEN, CSRF_TOKEN_ERROR_MSG);
                 return;
             }
         }

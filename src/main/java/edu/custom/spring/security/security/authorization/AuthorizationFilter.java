@@ -1,16 +1,14 @@
 package edu.custom.spring.security.security.authorization;
 
-import edu.custom.spring.security.security.SecurityUtils;
-import edu.custom.spring.security.security.authorization.handler.CustomAccessDeniedException;
-import edu.custom.spring.security.security.authorization.handler.CustomAccessDeniedHandler;
+import edu.custom.spring.security.security.authorization.handler.AuthorizationDeniedHandler;
 import edu.custom.spring.security.security.jwt.JwtClaims;
 import edu.custom.spring.security.security.jwt.JwtHandlerService;
-import io.jsonwebtoken.JwtException;
-import org.springframework.core.annotation.Order;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -30,11 +28,13 @@ import static edu.custom.spring.security.security.SecurityUtils.JWT_COOKIE_NAME;
  * verify and decode the JWT, extract the claims and build an {@link Authentication} object
  * which is passed to the {@link org.springframework.security.core.context.SecurityContext}.
  */
-@Order(0)
 public class AuthorizationFilter extends OncePerRequestFilter {
+    private static final String ACCESS_TOKEN_EXPIRED_MSG = "Access token expired.";
+    private static final String ACCESS_TOKEN_UNSUPPORTED_MSG = "Unsupported jwt token.";
+    private static final String ACCESS_TOKEN_MALFORMED_MSG = "Malformed jwt token.";
 
     private final JwtHandlerService jwtHandlerService;
-    private AccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
+    private AuthorizationDeniedHandler accessDeniedHandler = new AuthorizationDeniedHandler();
 
     public AuthorizationFilter(final JwtHandlerService jwtHandlerService) {
         this.jwtHandlerService = jwtHandlerService;
@@ -47,8 +47,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     .filter(cookie -> cookie.getName().equals(JWT_COOKIE_NAME))
                     .findFirst();
             if (!accessToken.isPresent()) {
-                SecurityContextHolder.clearContext();
-                accessDeniedHandler.handle(request, response, new CustomAccessDeniedException("Access token is missing.", HttpStatus.UNAUTHORIZED));
+                accessDeniedHandler.handle(response, HttpStatus.UNAUTHORIZED, "Access token is missing.");
                 return;
             }
             final JwtClaims jwtClaims = jwtHandlerService.decodeAccessToken(accessToken.get().getValue());
@@ -59,9 +58,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
              */
             response.addHeader(CSRF_JWT_CLAIM_HEADER_NAME, jwtClaims.getCsrfToken());
             chain.doFilter(request, response);
-        } catch (JwtException jwtException) {
-            SecurityContextHolder.clearContext();
-            accessDeniedHandler.handle(request, response, new CustomAccessDeniedException(jwtException.getMessage(), HttpStatus.UNAUTHORIZED));
+        } catch (ExpiredJwtException e) {
+            accessDeniedHandler.handle(response, HttpStatus.UNAUTHORIZED, ACCESS_TOKEN_EXPIRED_MSG);
+        } catch (UnsupportedJwtException e) {
+            accessDeniedHandler.handle(response, HttpStatus.UNAUTHORIZED, ACCESS_TOKEN_UNSUPPORTED_MSG);
+        } catch (MalformedJwtException jwtException) {
+            accessDeniedHandler.handle(response, HttpStatus.UNAUTHORIZED, ACCESS_TOKEN_MALFORMED_MSG);
         }
     }
 
