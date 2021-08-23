@@ -1,8 +1,9 @@
 package edu.custom.spring.security.security;
 
 import edu.custom.spring.security.security.authentication.BasicAuthenticationProvider;
+import edu.custom.spring.security.security.authorization.JwtAuthenticationProvider;
+import edu.custom.spring.security.security.jwt.JwtHandlerService;
 import edu.custom.spring.security.service.UserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,15 +12,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class ProvidersConfiguration {
 
     private final UserDetailsService userDetailsService;
+    private final JwtHandlerService jwtHandlerService;
 
-    @Autowired
-    public ProvidersConfiguration(UserDetailsService userDetailsService) {
+    public ProvidersConfiguration(UserDetailsService userDetailsService, JwtHandlerService jwtHandlerService) {
         this.userDetailsService = userDetailsService;
+        this.jwtHandlerService = jwtHandlerService;
     }
 
     @Bean
     public BasicAuthenticationProvider basicAuthenticationProvider(BCryptPasswordEncoder bCryptPasswordEncoder) {
         return new BasicAuthenticationProvider(bCryptPasswordEncoder, userDetailsService);
+    }
+
+    @Bean
+    public JwtAuthenticationProvider jwtAuthenticationProvider() {
+        return new JwtAuthenticationProvider(jwtHandlerService);
     }
 
     @Bean

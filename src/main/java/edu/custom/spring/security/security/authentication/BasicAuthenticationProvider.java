@@ -3,6 +3,7 @@ package edu.custom.spring.security.security.authentication;
 import edu.custom.spring.security.service.UserDetailsService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,13 +22,17 @@ public class BasicAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        final String username = authentication.getPrincipal().toString();
-        final String password = authentication.getCredentials().toString();
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        if (bCryptPasswordEncoder.matches(password, userDetails.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
+        if(authentication instanceof UsernamePasswordAuthenticationToken) {
+            final String username = authentication.getPrincipal().toString();
+            final String password = authentication.getCredentials().toString();
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (bCryptPasswordEncoder.matches(password, userDetails.getPassword())) {
+                return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
+            } else {
+                throw new BadCredentialsException("Username and/or password does not match!");
+            }
         } else {
-            throw new BadCredentialsException("Username and/or password does not match!");
+            throw new InternalAuthenticationServiceException("Authentication failed");
         }
     }
 

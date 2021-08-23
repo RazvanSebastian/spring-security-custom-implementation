@@ -2,8 +2,9 @@ package edu.custom.spring.security.security;
 
 import edu.custom.spring.security.security.authentication.BasicAuthenticationFilter;
 import edu.custom.spring.security.security.authentication.BasicAuthenticationProvider;
-import edu.custom.spring.security.security.authorization.AuthorizationFilter;
-import edu.custom.spring.security.security.authorization.StatelessCsrfFilter;
+import edu.custom.spring.security.security.authorization.JwtAuthenticationFilter;
+import edu.custom.spring.security.security.authorization.JwtAuthenticationProvider;
+import edu.custom.spring.security.security.authorization.SkipRequestMatcher;
 import edu.custom.spring.security.security.jwt.JwtHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -31,6 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final List<String> pathsToSkip;
     private final String logoutPath;
     private final BasicAuthenticationProvider basicAuthenticationProvider;
+    private final JwtAuthenticationProvider jwtAuthenticationProvider;
     private final JwtHandlerService jwtHandlerService;
 
     @Autowired
@@ -38,18 +39,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             final @Value("#{'${security.paths.to.skip}'.split(',')}") List<String> pathsToSkip,
             final @Value("${security.paths.logout}") String logoutPath,
             final BasicAuthenticationProvider basicAuthenticationProvider,
+            JwtAuthenticationProvider jwtAuthenticationProvider,
             JwtHandlerService jwtHandlerService) {
         this.pathsToSkip = pathsToSkip;
         this.logoutPath = logoutPath;
         this.basicAuthenticationProvider = basicAuthenticationProvider;
+        this.jwtAuthenticationProvider = jwtAuthenticationProvider;
         this.jwtHandlerService = jwtHandlerService;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        String[] urls = pathsToSkip.toArray(new String[0]);
+        final String[] allowedUrls = pathsToSkip.toArray(new String[0]);
         http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers(urls).permitAll()
+                .antMatchers(allowedUrls).permitAll()
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/resource/**").hasAnyAuthority("ROLE_ADMIN_WRITE")
@@ -58,21 +61,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                // We are using our custom filter instead of default UsernamePasswordAuthenticationFilter implementation
                 .addFilterBefore(basicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new AuthorizationFilter(jwtHandlerService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new StatelessCsrfFilter(), AuthorizationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .logout(logoutHandler());
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(basicAuthenticationProvider);
+        auth.authenticationProvider(jwtAuthenticationProvider);
     }
 
     private BasicAuthenticationFilter basicAuthenticationFilter(final AuthenticationManager authenticationManager) {
         final RequestMatcher requestMatcher = new AntPathRequestMatcher("/auth", HttpMethod.POST.toString());
         return new BasicAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
+    }
+
+    private JwtAuthenticationFilter jwtAuthenticationFilter(final AuthenticationManager authenticationManager) {
+        final SkipRequestMatcher skipRequestMatcher = new SkipRequestMatcher(pathsToSkip);
+        return new JwtAuthenticationFilter(skipRequestMatcher, authenticationManager);
     }
 
     private Customizer<LogoutConfigurer<HttpSecurity>> logoutHandler() {

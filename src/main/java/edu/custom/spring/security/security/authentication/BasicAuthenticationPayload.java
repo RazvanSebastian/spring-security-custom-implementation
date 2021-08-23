@@ -12,7 +12,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BasicAuthenticationPayload {
 
+    /**
+     * Alias for Username
+     */
     private String principal;
+
+    /**
+     * Alias for password
+     */
     private String credentials;
 
 }

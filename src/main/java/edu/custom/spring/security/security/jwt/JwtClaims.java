@@ -13,5 +13,5 @@ import org.springframework.security.core.Authentication;
 public class JwtClaims {
 
     private Authentication authentication;
-    private String csrfToken;
+
 }
