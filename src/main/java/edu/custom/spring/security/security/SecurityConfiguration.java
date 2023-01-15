@@ -51,7 +51,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         final String[] allowedUrls = pathsToSkip.toArray(new String[0]);
-        http.cors().and().csrf().disable().authorizeRequests()
+        http.cors()
+                .and().exceptionHandling()
+                .accessDeniedHandler(new CustomAccessDenied())
+                .and().csrf().disable().authorizeRequests()
                 .antMatchers(allowedUrls).permitAll()
                 .and()
                 .authorizeRequests()
