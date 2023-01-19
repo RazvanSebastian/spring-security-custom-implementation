@@ -12,4 +12,8 @@ export class AuthenticationService {
   login(loginModel: LoginModel) {
     return this.httpClient.post('/api/auth', JSON.stringify(loginModel));
   }
+
+  getCsrf() {
+    return this.httpClient.get('/api/auth/csrf');
+  }
 }

@@ -16,6 +16,11 @@ public class AuthenticationController {
         return ResponseEntity.accepted().build();
     }
 
+    @GetMapping("/csrf")
+    public ResponseEntity getCsrfToken(){
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/details")
     public ResponseEntity getUserDetails() {
         final Authentication authenticatedUser = SecurityContextHolder.getContext().getAuthentication();

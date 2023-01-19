@@ -18,6 +18,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -54,16 +57,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.cors()
                 .and().exceptionHandling()
                 .accessDeniedHandler(new CustomAccessDenied())
-                .and().csrf().disable().authorizeRequests()
-                .antMatchers(allowedUrls).permitAll()
-                .and()
+//                .and().csrf().csrfTokenRepository(csrfTokenRepository()).and()
+                .and().csrf().disable()
                 .authorizeRequests()
+                .antMatchers(allowedUrls).permitAll()
+                .and().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/resource/**").hasAnyAuthority("ROLE_ADMIN_WRITE")
                 .antMatchers(HttpMethod.GET, "/resource/**").hasAnyAuthority("ROLE_ADMIN_READ", "ROLE_USER_READ")
                 .anyRequest().authenticated()
+                .and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .addFilterBefore(customCsrfFilter(), CsrfFilter.class)
                 .addFilterBefore(basicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .logout(logoutHandler());
@@ -96,6 +101,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             response.getWriter().flush();
                         });
 
+    }
+
+    private CsrfFilter customCsrfFilter(){
+        CsrfFilter csrfFilter = new CsrfFilter(csrfTokenRepository());
+        csrfFilter.setAccessDeniedHandler(new CustomAccessDenied());
+        return csrfFilter;
+    }
+
+    private CsrfTokenRepository csrfTokenRepository() {
+        CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
+        csrfTokenRepository.setCookieHttpOnly(false);
+        csrfTokenRepository.setCookiePath("/");
+        return csrfTokenRepository;
     }
 
 }

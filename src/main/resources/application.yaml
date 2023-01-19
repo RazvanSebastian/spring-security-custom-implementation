@@ -10,7 +10,7 @@ security:
   paths:
     logout: "/auth/logout"
     to:
-      skip: "/auth,/swagger-ui/**,/v2/api-docs,/swagger-resources,/swagger-resources/configuration/ui,/swagger-resources/configuration/security"
+      skip: "/auth,/auth/csrf,/swagger-ui/**,/v2/api-docs,/swagger-resources,/swagger-resources/configuration/ui,/swagger-resources/configuration/security"
 ---
 spring:
   datasource:

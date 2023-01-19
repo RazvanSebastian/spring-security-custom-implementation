@@ -47,7 +47,7 @@ export class ResourcesComponent implements OnInit {
         this.messageOnPostResource = `Saved resource at ${this.datePipe.transform(new Date(), 'medium')}`;
       },
       error: (errorResponse) => {
-        this.messageOnPostResource = errorResponse.error.message;
+        this.messageOnPostResource = JSON.parse(errorResponse.error).message;
         this.isSuccessOnPostResource = false;
       }
     });
