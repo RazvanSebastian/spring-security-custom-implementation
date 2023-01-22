@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security.authentication;
+package edu.custom.spring.security.security.authentication.credentials;
 
 import edu.custom.spring.security.service.UserDetailsService;
 import org.springframework.security.authentication.AuthenticationProvider;

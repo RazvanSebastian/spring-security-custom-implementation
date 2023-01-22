@@ -1,11 +1,11 @@
 package edu.custom.spring.security.security;
 
-import edu.custom.spring.security.security.authentication.BasicAuthenticationFilter;
-import edu.custom.spring.security.security.authentication.BasicAuthenticationProvider;
-import edu.custom.spring.security.security.authorization.JwtAuthenticationFilter;
-import edu.custom.spring.security.security.authorization.JwtAuthenticationProvider;
-import edu.custom.spring.security.security.authorization.SkipRequestMatcher;
-import edu.custom.spring.security.security.jwt.JwtHandlerService;
+import edu.custom.spring.security.security.authentication.credentials.BasicAuthenticationFilter;
+import edu.custom.spring.security.security.authentication.credentials.BasicAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationFilter;
+import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.jwt.SkipRequestMatcher;
+import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -56,7 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         final String[] allowedUrls = pathsToSkip.toArray(new String[0]);
         http.cors()
                 .and().exceptionHandling()
-                .accessDeniedHandler(new CustomAccessDenied())
+                .accessDeniedHandler(new CustomAccessDeniedHandler())
                 .and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers(allowedUrls).permitAll()
@@ -104,7 +104,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private CsrfFilter customCsrfFilter(){
         CsrfFilter csrfFilter = new CsrfFilter(csrfTokenRepository());
-        csrfFilter.setAccessDeniedHandler(new CustomAccessDenied());
+        csrfFilter.setAccessDeniedHandler(new CustomAccessDeniedHandler());
         return csrfFilter;
     }
 

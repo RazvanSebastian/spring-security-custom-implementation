@@ -1,8 +1,8 @@
 package edu.custom.spring.security.security;
 
-import edu.custom.spring.security.security.authentication.BasicAuthenticationProvider;
-import edu.custom.spring.security.security.authorization.JwtAuthenticationProvider;
-import edu.custom.spring.security.security.jwt.JwtHandlerService;
+import edu.custom.spring.security.security.authentication.credentials.BasicAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationProvider;
+import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import edu.custom.spring.security.service.UserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security.authorization;
+package edu.custom.spring.security.security.authentication.jwt;
 
 import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

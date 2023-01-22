@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security.authorization;
+package edu.custom.spring.security.security.authentication.jwt;
 
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;

@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security.authentication;
+package edu.custom.spring.security.security.authentication.credentials;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

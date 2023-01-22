@@ -1,5 +1,7 @@
-package edu.custom.spring.security.security.jwt;
+package edu.custom.spring.security.security.jwt.service;
 
+import edu.custom.spring.security.security.jwt.models.JwtClaims;
+import edu.custom.spring.security.security.jwt.models.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;

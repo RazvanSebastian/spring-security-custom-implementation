@@ -1,9 +1,9 @@
-package edu.custom.spring.security.security.authentication;
+package edu.custom.spring.security.security.authentication.credentials;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.custom.spring.security.model.exception.ErrorResponse;
 import edu.custom.spring.security.security.SecurityUtils;
-import edu.custom.spring.security.security.jwt.JwtHandlerService;
+import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

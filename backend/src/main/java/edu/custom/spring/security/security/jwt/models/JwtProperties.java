@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security.jwt;
+package edu.custom.spring.security.security.jwt.models;
 
 import lombok.Getter;
 import lombok.Setter;

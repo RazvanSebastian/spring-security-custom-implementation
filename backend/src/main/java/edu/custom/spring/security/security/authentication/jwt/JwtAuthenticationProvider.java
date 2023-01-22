@@ -1,7 +1,7 @@
-package edu.custom.spring.security.security.authorization;
+package edu.custom.spring.security.security.authentication.jwt;
 
-import edu.custom.spring.security.security.jwt.JwtClaims;
-import edu.custom.spring.security.security.jwt.JwtHandlerService;
+import edu.custom.spring.security.security.jwt.models.JwtClaims;
+import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;

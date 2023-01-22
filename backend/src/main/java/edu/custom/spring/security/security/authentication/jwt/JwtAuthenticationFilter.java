@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security.authorization;
+package edu.custom.spring.security.security.authentication.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.custom.spring.security.model.exception.ErrorResponse;
