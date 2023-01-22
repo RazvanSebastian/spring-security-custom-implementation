@@ -57,7 +57,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.cors()
                 .and().exceptionHandling()
                 .accessDeniedHandler(new CustomAccessDenied())
-//                .and().csrf().csrfTokenRepository(csrfTokenRepository()).and()
                 .and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers(allowedUrls).permitAll()
