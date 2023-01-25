@@ -1,6 +1,6 @@
 package edu.custom.spring.security.security.authentication.credentials;
 
-import edu.custom.spring.security.service.UserDetailsService;
+import edu.custom.spring.security.security.service.SecurityUserDetailsService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -13,9 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class BasicAuthenticationProvider implements AuthenticationProvider {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final UserDetailsService userDetailsService;
+    private final SecurityUserDetailsService userDetailsService;
 
-    public BasicAuthenticationProvider(BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsService userDetailsService) {
+    public BasicAuthenticationProvider(BCryptPasswordEncoder bCryptPasswordEncoder, SecurityUserDetailsService userDetailsService) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userDetailsService = userDetailsService;
     }

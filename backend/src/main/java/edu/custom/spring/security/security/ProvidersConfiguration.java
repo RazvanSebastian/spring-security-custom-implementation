@@ -2,8 +2,10 @@ package edu.custom.spring.security.security;
 
 import edu.custom.spring.security.security.authentication.credentials.BasicAuthenticationProvider;
 import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.social.google.service.GoogleAuthService;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
-import edu.custom.spring.security.service.UserDetailsService;
+import edu.custom.spring.security.security.service.SecurityUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,17 +13,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 public class ProvidersConfiguration {
 
-    private final UserDetailsService userDetailsService;
+    private final SecurityUserDetailsService userDetailsService;
     private final JwtHandlerService jwtHandlerService;
+    private final GoogleAuthService googleAuthService;
 
-    public ProvidersConfiguration(UserDetailsService userDetailsService, JwtHandlerService jwtHandlerService) {
+    public ProvidersConfiguration(SecurityUserDetailsService userDetailsService, JwtHandlerService jwtHandlerService, GoogleAuthService googleAuthService) {
         this.userDetailsService = userDetailsService;
         this.jwtHandlerService = jwtHandlerService;
+        this.googleAuthService = googleAuthService;
     }
 
     @Bean
     public BasicAuthenticationProvider basicAuthenticationProvider(BCryptPasswordEncoder bCryptPasswordEncoder) {
         return new BasicAuthenticationProvider(bCryptPasswordEncoder, userDetailsService);
+    }
+
+    @Bean
+    public GoogleAuthenticationProvider googleAuthenticationProvider(){
+        return new GoogleAuthenticationProvider(googleAuthService, userDetailsService);
     }
 
     @Bean

@@ -2,7 +2,7 @@ package edu.custom.spring.security.security.authentication.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.custom.spring.security.model.exception.ErrorResponse;
-import edu.custom.spring.security.security.SecurityUtils;
+import edu.custom.spring.security.security.util.SecurityUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static edu.custom.spring.security.security.SecurityUtils.JWT_COOKIE_NAME;
+import static edu.custom.spring.security.security.util.SecurityUtils.JWT_COOKIE_NAME;
 
 /**
  * This filter search for the cookie which hold the access token and if that cookie was found,

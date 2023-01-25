@@ -1,6 +1,6 @@
-package edu.custom.spring.security.security.authentication.google.controller;
+package edu.custom.spring.security.security.authentication.social.google.controller;
 
-import edu.custom.spring.security.security.authentication.google.service.GoogleAuthService;
+import edu.custom.spring.security.security.authentication.social.google.service.GoogleAuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +20,6 @@ public class GoogleAuthController {
     @GetMapping("/consent")
     public ResponseEntity getGoogleAuthUrl() {
         return ResponseEntity.ok(googleAuthService.getGoogleAuthConsentRequestUri());
-    }
-
-    @GetMapping("/consent/callback")
-    public ResponseEntity resolveConsentCallback(@RequestParam("code") String authorizationCode) {
-        return ResponseEntity.ok(this.googleAuthService.getUserInfo(authorizationCode));
     }
 
 }

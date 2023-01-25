@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security;
+package edu.custom.spring.security.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.custom.spring.security.model.exception.ErrorResponse;

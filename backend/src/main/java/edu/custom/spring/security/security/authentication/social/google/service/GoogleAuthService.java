@@ -1,10 +1,11 @@
-package edu.custom.spring.security.security.authentication.google.service;
+package edu.custom.spring.security.security.authentication.social.google.service;
 
-import edu.custom.spring.security.security.authentication.google.client.GoogleAuthClient;
-import edu.custom.spring.security.security.authentication.google.config.GoogleAuthProperties;
-import edu.custom.spring.security.security.authentication.google.model.GoogleAuthCodeExchangeRequest;
-import edu.custom.spring.security.security.authentication.google.model.GoogleAuthCodeExchangeResponse;
-import edu.custom.spring.security.security.authentication.google.model.GoogleUserInfoResponse;
+import edu.custom.spring.security.security.authentication.social.google.client.GoogleAuthClient;
+import edu.custom.spring.security.security.authentication.social.google.config.GoogleAuthProperties;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthCodeExchangeRequest;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthCodeExchangeResponse;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthConsentUriResponse;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleUserInfoResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,8 +19,8 @@ public class GoogleAuthService {
         this.googleAuthClient = googleAuthClient;
     }
 
-    public String getGoogleAuthConsentRequestUri() {
-        return this.googleAuthProperties.getGoogleAuthConsentRequestUri().toUriString();
+    public GoogleAuthConsentUriResponse getGoogleAuthConsentRequestUri() {
+        return new GoogleAuthConsentUriResponse(this.googleAuthProperties.getGoogleAuthConsentRequestUri().toUriString());
     }
 
     public GoogleUserInfoResponse getUserInfo(String authorizationCode) {

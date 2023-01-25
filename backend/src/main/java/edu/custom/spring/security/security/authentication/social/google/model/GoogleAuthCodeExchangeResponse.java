@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security.authentication.google.model;
+package edu.custom.spring.security.security.authentication.social.google.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Getter;

@@ -1,14 +1,14 @@
-spring.profiles.active: security-auth-google, security-jwt
+spring.profiles.active: security-auth-google,security-jwt
 
 server.servlet.context-path: /api
 
 security.paths.logout: "/auth/logout"
-security.paths.to.skip: "/google-auth/**,/auth,/auth/csrf,/swagger-ui/**,/v2/api-docs,/swagger-resources,/swagger-resources/configuration/ui,/swagger-resources/configuration/security"
+security.paths.to.skip: "/auth,/google-auth/**,/auth/csrf,/swagger-ui/**,/v2/api-docs,/swagger-resources,/swagger-resources/configuration/ui,/swagger-resources/configuration/security"
 
 spring.datasource.driverClassName: org.h2.Driver
 spring.datasource.password: password
-spring.datasource.url: "jdbc:h2:file:~/test2;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE"
+spring.datasource.url: "jdbc:h2:file:~/test2;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;"
 spring.datasource.username: sa
-spring.datasource.jpa.database-platform: org.hibernate.dialect.H2Dialect
-spring.datasource.jpa.hibernate.ddl-auto: update
+spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto: update
 

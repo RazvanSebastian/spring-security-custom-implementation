@@ -22,7 +22,7 @@ public class SecurityDataInitializer implements ApplicationListener<ContextRefre
     private final PrivilegeRepository privilegeRepository;
 
     @Autowired
-    public SecurityDataInitializer(UserRepository userRepository, RoleRepository roleRepository, PrivilegeRepository privilegeRepository) {
+    public  SecurityDataInitializer(UserRepository userRepository, RoleRepository roleRepository, PrivilegeRepository privilegeRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.privilegeRepository = privilegeRepository;
@@ -40,13 +40,13 @@ public class SecurityDataInitializer implements ApplicationListener<ContextRefre
         Role adminRole = addRole("ROLE_ADMIN", readPrivilege, writePrivilege);
         Role userRole = addRole("ROLE_USER", readPrivilege);
 
-        addUser("admin", "admin", adminRole);
-        addUser("user", "user", userRole);
+        addUser("admin@security.com", "admin", adminRole);
+        addUser("user@security.com", "user", userRole);
     }
 
-    private void addUser(String username, String password, Role... roles) {
+    private void addUser(String email, String password, Role... roles) {
         User user = new User();
-        user.setUsername(username);
+        user.setEmail(email);
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         user.setRoles(Arrays.asList(roles));
         userRepository.save(user);

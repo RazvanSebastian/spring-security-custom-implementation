@@ -1,9 +1,9 @@
-package edu.custom.spring.security.security.authentication.google.client;
+package edu.custom.spring.security.security.authentication.social.google.client;
 
-import edu.custom.spring.security.security.authentication.google.config.GoogleAuthProperties;
-import edu.custom.spring.security.security.authentication.google.model.GoogleAuthCodeExchangeRequest;
-import edu.custom.spring.security.security.authentication.google.model.GoogleAuthCodeExchangeResponse;
-import edu.custom.spring.security.security.authentication.google.model.GoogleUserInfoResponse;
+import edu.custom.spring.security.security.authentication.social.google.config.GoogleAuthProperties;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthCodeExchangeRequest;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthCodeExchangeResponse;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleUserInfoResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;

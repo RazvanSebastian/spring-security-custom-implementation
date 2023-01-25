@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security;
+package edu.custom.spring.security.security.util;
 
 
 import javax.servlet.http.Cookie;

@@ -5,6 +5,9 @@ import edu.custom.spring.security.security.authentication.credentials.BasicAuthe
 import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationFilter;
 import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationProvider;
 import edu.custom.spring.security.security.authentication.jwt.SkipRequestMatcher;
+import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationFilter;
+import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationProvider;
+import edu.custom.spring.security.security.handler.CustomAccessDeniedHandler;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +29,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.List;
 
-import static edu.custom.spring.security.security.SecurityUtils.JWT_COOKIE_NAME;
+import static edu.custom.spring.security.security.util.SecurityUtils.JWT_COOKIE_NAME;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -35,6 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final String logoutPath;
     private final BasicAuthenticationProvider basicAuthenticationProvider;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final GoogleAuthenticationProvider googleAuthenticationProvider;
     private final JwtHandlerService jwtHandlerService;
 
     @Autowired
@@ -43,11 +47,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             final @Value("${security.paths.logout}") String logoutPath,
             final BasicAuthenticationProvider basicAuthenticationProvider,
             JwtAuthenticationProvider jwtAuthenticationProvider,
+            GoogleAuthenticationProvider googleAuthenticationProvider,
             JwtHandlerService jwtHandlerService) {
         this.pathsToSkip = pathsToSkip;
         this.logoutPath = logoutPath;
         this.basicAuthenticationProvider = basicAuthenticationProvider;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
+        this.googleAuthenticationProvider = googleAuthenticationProvider;
         this.jwtHandlerService = jwtHandlerService;
     }
 
@@ -69,6 +75,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
 //                .addFilterBefore(customCsrfFilter(), CsrfFilter.class)
                 .addFilterBefore(basicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(googleAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .logout(logoutHandler());
     }
@@ -77,11 +84,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(basicAuthenticationProvider);
         auth.authenticationProvider(jwtAuthenticationProvider);
+        auth.authenticationProvider(googleAuthenticationProvider);
     }
 
     private BasicAuthenticationFilter basicAuthenticationFilter(final AuthenticationManager authenticationManager) {
         final RequestMatcher requestMatcher = new AntPathRequestMatcher("/auth", HttpMethod.POST.toString());
         return new BasicAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
+    }
+
+    private GoogleAuthenticationFilter googleAuthenticationFilter(final AuthenticationManager authenticationManager) {
+        final RequestMatcher requestMatcher = new AntPathRequestMatcher("/google-auth/consent/callback", HttpMethod.GET.toString());
+        return new GoogleAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
     }
 
     private JwtAuthenticationFilter jwtAuthenticationFilter(final AuthenticationManager authenticationManager) {
@@ -102,7 +115,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     }
 
-    private CsrfFilter customCsrfFilter(){
+    private CsrfFilter customCsrfFilter() {
         CsrfFilter csrfFilter = new CsrfFilter(csrfTokenRepository());
         csrfFilter.setAccessDeniedHandler(new CustomAccessDeniedHandler());
         return csrfFilter;

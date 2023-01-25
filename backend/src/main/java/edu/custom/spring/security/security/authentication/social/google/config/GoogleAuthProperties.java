@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security.authentication.google.config;
+package edu.custom.spring.security.security.authentication.social.google.config;
 
 import lombok.Getter;
 import lombok.Setter;

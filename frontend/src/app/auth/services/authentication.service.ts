@@ -5,7 +5,7 @@ import { of } from 'rxjs/internal/observable/of';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { map } from 'rxjs/internal/operators/map';
 import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
-import { LoginModel } from '../models/auth';
+import { GoogleAuthConsentUriResponseModel, LoginModel } from '../models/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +34,9 @@ export class AuthenticationService {
 
   getCsrf() {
     return this.httpClient.get('/api/auth/csrf');
+  }
+
+  getGoogleAuthConsentUri() {
+    return this.httpClient.get<GoogleAuthConsentUriResponseModel>('/api/google-auth/consent');
   }
 }
