@@ -1,0 +1,11 @@
+security.auth.google:
+  clientId: "735983948976-l4140edile0kancu45aenagmr08c64d6.apps.googleusercontent.com"
+  projectId: "spring-security-custom-375519"
+  scopes: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
+  authProviderX509CertUrl: "https://www.googleapis.com/oauth2/v1/certs"
+  clientSecret: "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"
+  # URIs
+  authUri: "https://accounts.google.com/o/oauth2/auth"
+  tokenUri: "https://oauth2.googleapis.com/token"
+  userInfo: "https://www.googleapis.com/oauth2/v1/userinfo"
+  redirectAuthConsentCallbackUri: "http://localhost:8080/api/google-auth/consent/callback"
