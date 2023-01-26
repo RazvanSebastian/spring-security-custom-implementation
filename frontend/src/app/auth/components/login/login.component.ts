@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ReplaySubject, take, tap } from 'rxjs';
+import { GoogleAuthConsentUriResponseModel } from '../../models/auth';
 import { AuthenticationService } from '../../services/authentication.service';
 
 @Component({
@@ -14,11 +15,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   isAuthenticated$: ReplaySubject<boolean>;
   loginForm: FormGroup;
 
+  googleAuthConsentUri: string;
+
   constructor(private formBuilder: FormBuilder, private authenticationService: AuthenticationService, private router: Router) {
     this.isAuthenticated$ = this.authenticationService.isAuthenticated$;
   }
 
   ngOnInit(): void {
+    this.initializetGoogleAuthConsentUri();
     this.initializeComponent();
   }
 
@@ -33,6 +37,14 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.router.navigate(['resources'])
       }
     )
+  }
+
+  private initializetGoogleAuthConsentUri() {
+    this.authenticationService.getGoogleAuthConsentUri().subscribe({
+      next: (response: GoogleAuthConsentUriResponseModel) => {
+        this.googleAuthConsentUri = response.uri;
+      }
+    })
   }
 
   private initializeComponent() {

@@ -6,6 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/components/login/login.component';
+import { UnauthorizedPageComponent } from './auth/components/unauthorized-page/unauthorized-page.component';
 import { HttpRequestInterceptor } from './auth/interceptors/auth.interceptor';
 import { HttpXsrfInterceptor } from './auth/interceptors/csrf.interceptor';
 
@@ -15,7 +16,8 @@ import { ResourcesComponent } from './resources/component/resources.component';
   declarations: [
     AppComponent,
     LoginComponent,
-    ResourcesComponent
+    ResourcesComponent,
+    UnauthorizedPageComponent
   ],
   imports: [
     BrowserModule,
