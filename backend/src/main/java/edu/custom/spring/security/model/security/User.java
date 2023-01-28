@@ -1,5 +1,6 @@
 package edu.custom.spring.security.model.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,20 +20,30 @@ import java.util.stream.Collectors;
 @Entity
 public class User implements UserDetails {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     private String password;
 
+    @JsonIgnore
     private boolean accountNonExpired;
 
+    @JsonIgnore
     private boolean accountNonLocked;
 
+    @JsonIgnore
     private boolean credentialsNonExpired;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "userInfo_id", referencedColumnName = "id")
+    private UserInfo userInfo;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

@@ -4,9 +4,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/components/login/login.component';
 import { UnauthorizedPageComponent } from './auth/components/unauthorized-page/unauthorized-page.component';
 import { AuthGuard } from './auth/guards/auth-guard';
+import { HomeComponent } from './home/home.component';
 import { ResourcesComponent } from './resources/component/resources.component';
 
 const routes: Routes = [
+  {
+    path: 'home',
+    component: HomeComponent
+  },
   {
     path: 'login',
     component: LoginComponent
@@ -22,8 +27,12 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/home',
     pathMatch: 'full'
+  },
+  {
+    path: '**',
+    component: HomeComponent
   }
 
 ];

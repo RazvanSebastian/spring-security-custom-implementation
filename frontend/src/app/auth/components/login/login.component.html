@@ -28,10 +28,10 @@
       <div class="row mt-4">
         <button type="submit" class="btn btn-primary">Login</button>
       </div>
-      <div class="row mt-4" *ngIf="googleAuthConsentUri">
+      <div class="row mt-4">
         <a
           class="btn btn-lg btn-google btn-block text-uppercase btn-outline"
-          [href]="googleAuthConsentUri"
+          (click)="onRedirectToGoogleConsent()"
         >
           <img src="https://img.icons8.com/color/16/000000/google-logo.png" />
           Signup Using Google

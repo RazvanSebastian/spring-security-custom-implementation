@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ReplaySubject, take, tap } from 'rxjs';
+import { ReplaySubject, Subscription, take, tap } from 'rxjs';
 import { GoogleAuthConsentUriResponseModel } from '../../models/auth';
 import { AuthenticationService } from '../../services/authentication.service';
 
@@ -12,22 +12,26 @@ import { AuthenticationService } from '../../services/authentication.service';
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
-  isAuthenticated$: ReplaySubject<boolean>;
+  isAuthenticatedSubscription: Subscription;
   loginForm: FormGroup;
 
-  googleAuthConsentUri: string;
-
   constructor(private formBuilder: FormBuilder, private authenticationService: AuthenticationService, private router: Router) {
-    this.isAuthenticated$ = this.authenticationService.isAuthenticated$;
   }
 
   ngOnInit(): void {
-    this.initializetGoogleAuthConsentUri();
     this.initializeComponent();
   }
 
   ngOnDestroy(): void {
-    this.isAuthenticated$.unsubscribe();
+    this.isAuthenticatedSubscription.unsubscribe();
+  }
+
+  onRedirectToGoogleConsent() {
+    this.authenticationService.getRedirectToGoogleConsent().subscribe({
+      next: (response: GoogleAuthConsentUriResponseModel) => {
+        window.location.href = response.uri;
+      }
+    })
   }
 
   onLoginFormSubmit(): void {
@@ -39,16 +43,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     )
   }
 
-  private initializetGoogleAuthConsentUri() {
-    this.authenticationService.getGoogleAuthConsentUri().subscribe({
-      next: (response: GoogleAuthConsentUriResponseModel) => {
-        this.googleAuthConsentUri = response.uri;
-      }
-    })
-  }
-
   private initializeComponent() {
-    this.isAuthenticated$.pipe(
+    this.isAuthenticatedSubscription = this.authenticationService.isAuthenticated$.pipe(
       take(1),
       tap(isAuthenticated => {
         if (isAuthenticated) {
@@ -57,7 +53,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         else {
           this.initializeLoginForm();
         }
-      })).subscribe()
+      })).subscribe();
   }
 
   private initializeLoginForm() {

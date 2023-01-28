@@ -9,6 +9,7 @@ import edu.custom.spring.security.security.authentication.social.google.GoogleAu
 import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationProvider;
 import edu.custom.spring.security.security.handler.CustomAccessDeniedHandler;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
+import edu.custom.spring.security.security.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -20,21 +21,28 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.util.matcher.*;
 
-import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Set;
 
 import static edu.custom.spring.security.security.util.SecurityUtils.JWT_COOKIE_NAME;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final List<String> pathsToSkip;
+    private final Set<String> pathsToSkip;
     private final String logoutPath;
     private final BasicAuthenticationProvider basicAuthenticationProvider;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
@@ -43,7 +51,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public SecurityConfiguration(
-            final @Value("#{'${security.paths.to.skip}'.split(',')}") List<String> pathsToSkip,
+            final @Value("#{'${security.paths.to.skip}'.split(',')}") Set<String> pathsToSkip,
             final @Value("${security.paths.logout}") String logoutPath,
             final BasicAuthenticationProvider basicAuthenticationProvider,
             JwtAuthenticationProvider jwtAuthenticationProvider,
@@ -73,11 +81,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-//                .addFilterBefore(customCsrfFilter(), CsrfFilter.class)
+                .addFilterBefore(customCsrfFilter(), CsrfFilter.class)
                 .addFilterBefore(basicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(googleAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
-                .logout(logoutHandler());
+                .logout(logoutConfigure());
     }
 
     @Override
@@ -102,22 +110,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new JwtAuthenticationFilter(skipRequestMatcher, authenticationManager);
     }
 
-    private Customizer<LogoutConfigurer<HttpSecurity>> logoutHandler() {
-        return (LogoutConfigurer<HttpSecurity> logoutConfigurer) ->
-                logoutConfigurer
+    private Customizer<LogoutConfigurer<HttpSecurity>> logoutConfigure() {
+        return (LogoutConfigurer<HttpSecurity> logoutConfigure) ->
+                logoutConfigure
                         .logoutUrl(logoutPath)
+                        .logoutSuccessHandler((request, response, authentication) -> {})
                         .invalidateHttpSession(true)
-                        .deleteCookies(JWT_COOKIE_NAME)
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.getWriter().write("Logout successfully!");
-                            response.getWriter().flush();
-                        });
-
+                        .addLogoutHandler((request, response, authentication) -> SecurityUtils.removeAccessTokenFromCookies(response));
     }
 
     private CsrfFilter customCsrfFilter() {
+        RequestMatcher skipRequestMatcher = new SkipRequestMatcher(
+                Arrays.asList(
+                        new RequestHeaderRequestMatcher(
+                                "Referer",
+                                "http://localhost:8080/api/swagger-ui/index.html"
+                        ),
+                        new AntPathRequestMatcher("/swagger-ui/**"),
+                        new AntPathRequestMatcher("/google-auth/consent/callback")
+        ));
         CsrfFilter csrfFilter = new CsrfFilter(csrfTokenRepository());
         csrfFilter.setAccessDeniedHandler(new CustomAccessDeniedHandler());
+        csrfFilter.setRequireCsrfProtectionMatcher(skipRequestMatcher);
         return csrfFilter;
     }
 

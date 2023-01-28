@@ -2,8 +2,11 @@ package edu.custom.spring.security.security.service;
 
 import edu.custom.spring.security.model.security.Role;
 import edu.custom.spring.security.model.security.User;
+import edu.custom.spring.security.model.security.UserInfo;
 import edu.custom.spring.security.repository.RoleRepository;
+import edu.custom.spring.security.repository.UserInfoRepository;
 import edu.custom.spring.security.repository.UserRepository;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleUserInfoResponse;
 import edu.custom.spring.security.security.authentication.social.model.SocialAuthentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,10 +24,12 @@ public class SecurityUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final UserInfoRepository userInfoRepository;
 
-    public SecurityUserDetailsService(UserRepository userRepository, RoleRepository roleRepository) {
+    public SecurityUserDetailsService(UserRepository userRepository, RoleRepository roleRepository, UserInfoRepository userInfoRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.userInfoRepository = userInfoRepository;
     }
 
     @Override
@@ -48,13 +53,23 @@ public class SecurityUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(authentication.getUsername());
         if(Objects.isNull(user)) {
             final Role userRole = roleRepository.findByAuthority("ROLE_USER");
+
+            UserInfo userInfo = UserInfo.builder()
+                    .email(((GoogleUserInfoResponse)authentication).getEmail())
+                    .familyName(((GoogleUserInfoResponse)authentication).getFamilyName())
+                    .givenName(((GoogleUserInfoResponse)authentication).getGivenName())
+                    .picture(((GoogleUserInfoResponse)authentication).getPicture())
+                    .build();
+            userInfo = userInfoRepository.save(userInfo);
+
             user = new User();
             user.setEmail(authentication.getUsername());
             user.setRoles(Arrays.asList(userRole));
-            return userRepository.save(user);
-        } else {
-            return user;
+            user.setUserInfo(userInfo);
+
+            user = userRepository.save(user);
         }
+        return user;
     }
 
 }

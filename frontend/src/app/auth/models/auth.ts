@@ -6,3 +6,10 @@ export interface LoginModel {
 export interface GoogleAuthConsentUriResponseModel {
     uri: string;
 }
+
+export interface UserInfo {
+    email: string;
+    familyName: string;
+    givenName: string;
+    picture: string;
+}

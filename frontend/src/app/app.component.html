@@ -1,7 +1,103 @@
-<!-- As a link -->
-<nav class="navbar navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar</a>
+    <a class="navbar-brand" href="#">SecurityApp</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" [routerLink]="['/']">Home</a>
+        </li>
+        <li class="nav-item" *ngIf="isAuthenticated">
+          <a class="nav-link" aria-current="page" [routerLink]="['/resources']"
+            >Resources</a
+          >
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <ng-template [ngIf]="isAuthenticated">
+          <li class="nav-item">
+            <div class="dropdown">
+              <button
+                style="border: 0"
+                class="btn btn-outline-primary dropdown-toggle"
+                type="button"
+                id="dropdownMenu2"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <span class="btn-label">
+                  <i class="bi bi-person"></i>
+                </span>
+                Profile
+              </button>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="userDropdown"
+              >
+                <li>
+                  <div class="d-flex">
+                    <div class="p-2 flex-fill">
+                      <img
+                        [src]="userInfo.picture"
+                        alt="Avatar"
+                        class="avatar"
+                      />
+                    </div>
+                    <div class="p-2 flex-fill align-self-center">
+                      <h4>Welcome</h4>
+                      <h6>{{ userInfo.givenName }}</h6>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <button class="dropdown-item" type="button">
+                    {{ userInfo.email }}
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item" type="button">
+                    {{ userInfo.givenName }} {{ userInfo.familyName }}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    style="border: 0"
+                    class="btn btn-outline-danger mx-1"
+                    (click)="onLogout()"
+                  >
+                    <span class="btn-label">
+                      <i class="bi bi-box-arrow-right"></i>
+                    </span>
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ng-template>
+        <ng-template [ngIf]="!isAuthenticated">
+          <li class="nav-item">
+            <a
+              class="nav-link active"
+              aria-current="page"
+              [routerLink]="['/login']"
+              >Login</a
+            >
+          </li>
+        </ng-template>
+      </ul>
+    </div>
   </div>
 </nav>
 <router-outlet></router-outlet>

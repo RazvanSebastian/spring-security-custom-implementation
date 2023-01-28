@@ -9,6 +9,7 @@ import { LoginComponent } from './auth/components/login/login.component';
 import { UnauthorizedPageComponent } from './auth/components/unauthorized-page/unauthorized-page.component';
 import { HttpRequestInterceptor } from './auth/interceptors/auth.interceptor';
 import { HttpXsrfInterceptor } from './auth/interceptors/csrf.interceptor';
+import { HomeComponent } from './home/home.component';
 
 import { ResourcesComponent } from './resources/component/resources.component';
 
@@ -17,7 +18,8 @@ import { ResourcesComponent } from './resources/component/resources.component';
     AppComponent,
     LoginComponent,
     ResourcesComponent,
-    UnauthorizedPageComponent
+    UnauthorizedPageComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
