@@ -2,7 +2,7 @@ package edu.custom.spring.security.security.authentication.social.google;
 
 import edu.custom.spring.security.security.authentication.social.google.model.GoogleUserInfoResponse;
 import edu.custom.spring.security.security.authentication.social.google.service.GoogleAuthService;
-import edu.custom.spring.security.security.service.SecurityUserDetailsService;
+import edu.custom.spring.security.service.security.UserService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -13,11 +13,11 @@ import org.springframework.util.StringUtils;
 public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
     private final GoogleAuthService googleAuthService;
-    private final SecurityUserDetailsService userDetailsService;
+    private final UserService userService;
 
-    public GoogleAuthenticationProvider(GoogleAuthService googleAuthService, SecurityUserDetailsService userDetailsService) {
+    public GoogleAuthenticationProvider(GoogleAuthService googleAuthService, UserService userService) {
         this.googleAuthService = googleAuthService;
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         if (isAuthenticationPayloadValid(authentication)) {
             final GoogleAuthenticationToken authenticationToken = (GoogleAuthenticationToken) authentication;
             final GoogleUserInfoResponse googleUserInfoResponse = googleAuthService.getUserInfo(authenticationToken.getAuthorizationCode());
-            final UserDetails userDetails = userDetailsService.retrieveOrRegisterNewUserWithSocialAuth(googleUserInfoResponse);
+            final UserDetails userDetails = userService.getOrSaveNewUserBySocialAuthentication(googleUserInfoResponse);
             return new GoogleAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
         } else {
             throw new InternalAuthenticationServiceException("Authentication with google failed");

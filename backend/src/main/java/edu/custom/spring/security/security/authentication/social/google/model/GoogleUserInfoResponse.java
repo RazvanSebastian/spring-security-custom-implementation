@@ -28,8 +28,4 @@ public class GoogleUserInfoResponse implements SocialAuthentication {
 
     private String locale;
 
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
 }

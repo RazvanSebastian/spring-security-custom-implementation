@@ -2,21 +2,19 @@ package edu.custom.spring.security.controller;
 
 import edu.custom.spring.security.model.security.User;
 import edu.custom.spring.security.security.authentication.credentials.BasicAuthenticationPayload;
-import edu.custom.spring.security.security.service.SecurityUserDetailsService;
+import edu.custom.spring.security.service.security.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    private final SecurityUserDetailsService securityUserDetailsService;
+    private final UserService userService;
 
-    public AuthenticationController(SecurityUserDetailsService securityUserDetailsService) {
-        this.securityUserDetailsService = securityUserDetailsService;
+    public AuthenticationController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping
@@ -31,8 +29,7 @@ public class AuthenticationController {
 
     @GetMapping("/details")
     public ResponseEntity getUserDetails() {
-        final Authentication authenticatedUser = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) securityUserDetailsService.loadUserByUsername((String) authenticatedUser.getPrincipal());
+        User user = userService.getAuthenticatedUser();
         return ResponseEntity.ok(user.getUserInfo());
     }
 

@@ -2,5 +2,9 @@ package edu.custom.spring.security.security.authentication.social.model;
 
 public interface SocialAuthentication {
 
-    public String getUsername();
+    String getEmail();
+    String getFamilyName();
+    String getGivenName();
+    String getPicture();
+
 }

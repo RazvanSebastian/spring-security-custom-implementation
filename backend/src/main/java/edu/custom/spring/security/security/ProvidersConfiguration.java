@@ -5,19 +5,22 @@ import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationP
 import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationProvider;
 import edu.custom.spring.security.security.authentication.social.google.service.GoogleAuthService;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
-import edu.custom.spring.security.security.service.SecurityUserDetailsService;
+import edu.custom.spring.security.service.security.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 public class ProvidersConfiguration {
 
-    private final SecurityUserDetailsService userDetailsService;
+    private final UserService userService;
+    private final UserDetailsService userDetailsService;
     private final JwtHandlerService jwtHandlerService;
     private final GoogleAuthService googleAuthService;
 
-    public ProvidersConfiguration(SecurityUserDetailsService userDetailsService, JwtHandlerService jwtHandlerService, GoogleAuthService googleAuthService) {
+    public ProvidersConfiguration(UserService userService, UserDetailsService userDetailsService, JwtHandlerService jwtHandlerService, GoogleAuthService googleAuthService) {
+        this.userService = userService;
         this.userDetailsService = userDetailsService;
         this.jwtHandlerService = jwtHandlerService;
         this.googleAuthService = googleAuthService;
@@ -30,7 +33,7 @@ public class ProvidersConfiguration {
 
     @Bean
     public GoogleAuthenticationProvider googleAuthenticationProvider(){
-        return new GoogleAuthenticationProvider(googleAuthService, userDetailsService);
+        return new GoogleAuthenticationProvider(googleAuthService, userService);
     }
 
     @Bean

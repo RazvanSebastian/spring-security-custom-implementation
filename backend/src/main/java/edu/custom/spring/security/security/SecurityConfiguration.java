@@ -9,37 +9,33 @@ import edu.custom.spring.security.security.authentication.social.google.GoogleAu
 import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationProvider;
 import edu.custom.spring.security.security.handler.CustomAccessDeniedHandler;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
-import edu.custom.spring.security.security.util.SecurityUtils;
+import edu.custom.spring.security.security.util.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 
-import static edu.custom.spring.security.security.util.SecurityUtils.JWT_COOKIE_NAME;
-
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final Set<String> pathsToSkip;
@@ -75,8 +71,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(allowedUrls).permitAll()
                 .and().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/resource/**").hasAnyAuthority("ROLE_ADMIN_WRITE")
-                .antMatchers(HttpMethod.GET, "/resource/**").hasAnyAuthority("ROLE_ADMIN_READ", "ROLE_USER_READ")
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -116,7 +110,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .logoutUrl(logoutPath)
                         .logoutSuccessHandler((request, response, authentication) -> {})
                         .invalidateHttpSession(true)
-                        .addLogoutHandler((request, response, authentication) -> SecurityUtils.removeAccessTokenFromCookies(response));
+                        .addLogoutHandler((request, response, authentication) -> CookieUtils.removeAccessTokenFromCookies(response));
     }
 
     private CsrfFilter customCsrfFilter() {

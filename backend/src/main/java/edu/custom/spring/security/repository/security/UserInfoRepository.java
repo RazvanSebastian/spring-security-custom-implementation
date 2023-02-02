@@ -1,4 +1,4 @@
-package edu.custom.spring.security.repository;
+package edu.custom.spring.security.repository.security;
 
 import edu.custom.spring.security.model.security.UserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;

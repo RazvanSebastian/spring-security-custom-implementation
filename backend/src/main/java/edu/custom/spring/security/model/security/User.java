@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
 public class User implements UserDetails {
 
@@ -62,6 +61,10 @@ public class User implements UserDetails {
         return this.password;
     }
 
+    /**
+     * The email will be used as username since it is unique also on social auth.
+     * @return
+     */
     @Override
     public String getUsername() {
         return this.email;

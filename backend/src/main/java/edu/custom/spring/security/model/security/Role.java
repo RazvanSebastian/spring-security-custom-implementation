@@ -2,7 +2,6 @@ package edu.custom.spring.security.model.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -11,7 +10,6 @@ import java.util.Collection;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
 public class Role implements GrantedAuthority {
 
@@ -19,7 +17,10 @@ public class Role implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long id;
-    private String authority;
+
+    @Enumerated(EnumType.STRING)
+    private RolesEnum authority;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "roles_privileges",
@@ -30,7 +31,7 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return authority;
+        return authority.getValue();
     }
 
     @Override
@@ -51,6 +52,6 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String toString() {
-        return this.authority;
+        return this.authority.getValue();
     }
 }

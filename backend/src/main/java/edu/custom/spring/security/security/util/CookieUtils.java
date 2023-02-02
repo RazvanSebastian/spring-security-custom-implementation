@@ -4,7 +4,7 @@ package edu.custom.spring.security.security.util;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-public class SecurityUtils {
+public class CookieUtils {
 
     public static final String JWT_COOKIE_NAME = "access_token";
 

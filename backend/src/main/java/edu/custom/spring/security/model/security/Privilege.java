@@ -6,14 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
 public class Privilege implements GrantedAuthority {
 
@@ -21,11 +17,13 @@ public class Privilege implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long id;
-    private String authority;
+
+    @Enumerated(EnumType.STRING)
+    private PrivilegesEnum authority;
 
     @Override
     public String getAuthority() {
-        return authority;
+        return authority.getValue();
     }
 
     @Override
@@ -46,6 +44,6 @@ public class Privilege implements GrantedAuthority {
 
     @Override
     public String toString() {
-        return this.authority;
+        return this.authority.getValue();
     }
 }
