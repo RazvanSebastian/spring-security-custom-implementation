@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, tap } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { map } from 'rxjs/internal/operators/map';
 import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
-import { GoogleAuthConsentUriResponseModel, LoginModel, UserInfo } from '../models/auth';
+import { GoogleAuthConsentUriResponseModel, LoginModel, SocialAuthOption, UserInfo } from '../models/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +43,7 @@ export class AuthenticationService {
     return this.httpClient.get('/api/auth/csrf');
   }
 
-  getRedirectToGoogleConsent() {
-    return this.httpClient.get<GoogleAuthConsentUriResponseModel>('/api/google-auth/consent');
+  getSocialAuthRedirectUri(option: SocialAuthOption) {
+    return this.httpClient.get<GoogleAuthConsentUriResponseModel>(`/api/${option.toString()}/consent`);
   }
 }

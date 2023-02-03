@@ -13,3 +13,8 @@ export interface UserInfo {
     givenName?: string;
     picture?: string;
 }
+
+export enum SocialAuthOption {
+    GOOGLE = "google-auth",
+    GITHUB = "github-auth"
+}

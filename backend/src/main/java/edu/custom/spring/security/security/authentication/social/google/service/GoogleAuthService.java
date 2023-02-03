@@ -4,7 +4,7 @@ import edu.custom.spring.security.security.authentication.social.google.client.G
 import edu.custom.spring.security.security.authentication.social.google.config.GoogleAuthProperties;
 import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthCodeExchangeRequest;
 import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthCodeExchangeResponse;
-import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthConsentUriResponse;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthConsentUriRequest;
 import edu.custom.spring.security.security.authentication.social.google.model.GoogleUserInfoResponse;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +19,8 @@ public class GoogleAuthService {
         this.googleAuthClient = googleAuthClient;
     }
 
-    public GoogleAuthConsentUriResponse getGoogleAuthConsentRequestUri() {
-        return new GoogleAuthConsentUriResponse(this.googleAuthProperties.getGoogleAuthConsentRequestUri().toUriString());
+    public GoogleAuthConsentUriRequest getConsentAuthUriRequest() {
+        return new GoogleAuthConsentUriRequest(this.googleAuthProperties.getGoogleAuthConsentRequestUri().toUriString());
     }
 
     public GoogleUserInfoResponse getUserInfo(String authorizationCode) {

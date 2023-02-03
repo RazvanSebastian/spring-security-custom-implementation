@@ -5,6 +5,8 @@ import edu.custom.spring.security.security.authentication.credentials.BasicAuthe
 import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationFilter;
 import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationProvider;
 import edu.custom.spring.security.security.authentication.jwt.SkipRequestMatcher;
+import edu.custom.spring.security.security.authentication.social.github.GithubAuthenticationFilter;
+import edu.custom.spring.security.security.authentication.social.github.GithubAuthenticationProvider;
 import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationFilter;
 import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationProvider;
 import edu.custom.spring.security.security.handler.CustomAccessDeniedHandler;
@@ -42,6 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final String logoutPath;
     private final BasicAuthenticationProvider basicAuthenticationProvider;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final GithubAuthenticationProvider githubAuthenticationProvider;
     private final GoogleAuthenticationProvider googleAuthenticationProvider;
     private final JwtHandlerService jwtHandlerService;
 
@@ -51,12 +54,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             final @Value("${security.paths.logout}") String logoutPath,
             final BasicAuthenticationProvider basicAuthenticationProvider,
             JwtAuthenticationProvider jwtAuthenticationProvider,
-            GoogleAuthenticationProvider googleAuthenticationProvider,
+            GithubAuthenticationProvider githubAuthenticationProvider, GoogleAuthenticationProvider googleAuthenticationProvider,
             JwtHandlerService jwtHandlerService) {
         this.pathsToSkip = pathsToSkip;
         this.logoutPath = logoutPath;
         this.basicAuthenticationProvider = basicAuthenticationProvider;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
+        this.githubAuthenticationProvider = githubAuthenticationProvider;
         this.googleAuthenticationProvider = googleAuthenticationProvider;
         this.jwtHandlerService = jwtHandlerService;
     }
@@ -77,6 +81,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(customCsrfFilter(), CsrfFilter.class)
                 .addFilterBefore(basicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(githubAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(googleAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .logout(logoutConfigure());
@@ -87,11 +92,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(basicAuthenticationProvider);
         auth.authenticationProvider(jwtAuthenticationProvider);
         auth.authenticationProvider(googleAuthenticationProvider);
+        auth.authenticationProvider(githubAuthenticationProvider);
     }
 
     private BasicAuthenticationFilter basicAuthenticationFilter(final AuthenticationManager authenticationManager) {
         final RequestMatcher requestMatcher = new AntPathRequestMatcher("/auth", HttpMethod.POST.toString());
         return new BasicAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
+    }
+
+    private GithubAuthenticationFilter githubAuthenticationFilter(final AuthenticationManager authenticationManager){
+        final RequestMatcher requestMatcher = new AntPathRequestMatcher("/github-auth/consent/callback", HttpMethod.GET.toString());
+        return new GithubAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
     }
 
     private GoogleAuthenticationFilter googleAuthenticationFilter(final AuthenticationManager authenticationManager) {
@@ -121,7 +132,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                 "http://localhost:8080/api/swagger-ui/index.html"
                         ),
                         new AntPathRequestMatcher("/swagger-ui/**"),
-                        new AntPathRequestMatcher("/google-auth/consent/callback")
+                        new AntPathRequestMatcher("/google-auth/consent/callback"),
+                        new AntPathRequestMatcher("/github-auth/consent/callback")
         ));
         CsrfFilter csrfFilter = new CsrfFilter(csrfTokenRepository());
         csrfFilter.setAccessDeniedHandler(new CustomAccessDeniedHandler());

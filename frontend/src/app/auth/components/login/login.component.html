@@ -31,10 +31,25 @@
       <div class="row mt-4">
         <a
           class="btn btn-lg btn-google btn-block text-uppercase btn-outline"
-          (click)="onRedirectToGoogleConsent()"
+          (click)="onRedirectToGoogleConsent(GOOGLE_AUTH_OPTION)"
         >
-          <img src="https://img.icons8.com/color/16/000000/google-logo.png" />
+          <img
+            class="social-logo"
+            src="https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png"
+          />
           Signup Using Google
+        </a>
+      </div>
+      <div class="row mt-4">
+        <a
+          class="btn btn-lg btn-google btn-block text-uppercase btn-outline"
+          (click)="onRedirectToGoogleConsent(GITHUB_AUTH_OPTION)"
+        >
+          <img
+            class="social-logo"
+            src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+          />
+          Signup Using Github
         </a>
       </div>
     </form>

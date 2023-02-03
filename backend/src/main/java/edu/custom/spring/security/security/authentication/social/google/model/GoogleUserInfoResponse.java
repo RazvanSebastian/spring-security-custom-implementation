@@ -1,13 +1,13 @@
 package edu.custom.spring.security.security.authentication.social.google.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import edu.custom.spring.security.security.authentication.social.model.SocialAuthentication;
+import edu.custom.spring.security.security.authentication.social.model.SocialUserInfo;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GoogleUserInfoResponse implements SocialAuthentication {
+public class GoogleUserInfoResponse implements SocialUserInfo {
 
     private String id;
 

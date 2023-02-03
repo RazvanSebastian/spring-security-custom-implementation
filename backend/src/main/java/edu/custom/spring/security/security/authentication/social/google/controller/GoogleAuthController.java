@@ -16,9 +16,14 @@ public class GoogleAuthController {
         this.googleAuthService = googleAuthService;
     }
 
+    /**
+     * Returns the uri to Google authentication and consent page.
+     *
+     * @return
+     */
     @GetMapping("/consent")
     public ResponseEntity getGoogleAuthUrl() {
-        return ResponseEntity.ok(googleAuthService.getGoogleAuthConsentRequestUri());
+        return ResponseEntity.ok(googleAuthService.getConsentAuthUriRequest());
     }
 
 }

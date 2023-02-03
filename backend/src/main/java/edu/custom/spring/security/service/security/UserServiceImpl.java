@@ -7,7 +7,7 @@ import edu.custom.spring.security.model.security.UserInfo;
 import edu.custom.spring.security.repository.security.RoleRepository;
 import edu.custom.spring.security.repository.security.UserInfoRepository;
 import edu.custom.spring.security.repository.security.UserRepository;
-import edu.custom.spring.security.security.authentication.social.model.SocialAuthentication;
+import edu.custom.spring.security.security.authentication.social.model.SocialUserInfo;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public UserDetails getOrSaveNewUserBySocialAuthentication(SocialAuthentication authentication){
+    public UserDetails getOrSaveNewUserBySocialAuthentication(SocialUserInfo authentication){
         User user = userRepository.findByEmail(authentication.getEmail());
         if(Objects.isNull(user)) {
             final Role userRole = roleRepository.findByAuthority(RolesEnum.USER);

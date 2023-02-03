@@ -1,9 +1,9 @@
-spring.profiles.active: security-auth-google,security-jwt
+spring.profiles.active: security-auth-google,security-auth-github,security-jwt
 
 server.servlet.context-path: /api
 
 security.paths.logout: "/auth/logout"
-security.paths.to.skip: "/auth,/google-auth/**,/auth/csrf,/swagger-ui/**,/v2/api-docs,/swagger-resources,/swagger-resources/configuration/ui,/swagger-resources/configuration/security"
+security.paths.to.skip: "/auth,/github-auth/**,/google-auth/**,/auth/csrf,/swagger-ui/**,/v2/api-docs,/swagger-resources,/swagger-resources/configuration/ui,/swagger-resources/configuration/security"
 
 spring.datasource.driverClassName: org.h2.Driver
 spring.datasource.password: password
