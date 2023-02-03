@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { SecuredResourceModel } from '../model';
 
 @Injectable({
   providedIn: 'root'
@@ -8,11 +9,15 @@ export class ResourcesService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getResource() {
-    return this.httpClient.get('/api/resource', { responseType: 'text' });
+  getUserResource() {
+    return this.httpClient.get<SecuredResourceModel[]>('/api/resources/user');
   }
 
-  postResource(value: string) {
-    return this.httpClient.post('/api/resource', value, { responseType: 'text' });
+  getAllResources() {
+    return this.httpClient.get<SecuredResourceModel[]>('/api/resources/user');
+  }
+
+  saveUserResource(value: string) {
+    return this.httpClient.post<SecuredResourceModel>('/api/resources', value);
   }
 }

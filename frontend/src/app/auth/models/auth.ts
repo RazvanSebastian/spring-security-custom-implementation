@@ -9,7 +9,7 @@ export interface GoogleAuthConsentUriResponseModel {
 
 export interface UserInfo {
     email: string;
-    familyName: string;
-    givenName: string;
-    picture: string;
+    familyName?: string;
+    givenName?: string;
+    picture?: string;
 }

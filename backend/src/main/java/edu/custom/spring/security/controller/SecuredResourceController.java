@@ -1,5 +1,6 @@
 package edu.custom.spring.security.controller;
 
+import edu.custom.spring.security.model.resource.SecuredResource;
 import edu.custom.spring.security.service.resource.SecuredResourceService;
 import edu.custom.spring.security.service.security.UserService;
 import org.springframework.http.ResponseEntity;
@@ -22,17 +23,17 @@ public class SecuredResourceController {
 
     @RolesAllowed("ADMIN_READ")
     @GetMapping("/all")
-    public ResponseEntity<?> getAllSecuredResources() {
+    public ResponseEntity getAllSecuredResources() {
         return ResponseEntity.ok(securedResourceService.getAllSecuredResources());
     }
 
     @GetMapping("/user")
-    public ResponseEntity<?> getUserSecuredResources() {
+    public ResponseEntity getUserSecuredResources() {
         return ResponseEntity.ok(securedResourceService.getAllSecuredResources(userService.getAuthenticatedUser()));
     }
 
     @PostMapping
-    public ResponseEntity<?> postSecuredResource(@RequestBody String body) {
+    public ResponseEntity postSecuredResource(@RequestBody String body) {
         return ResponseEntity.ok(securedResourceService.save(body, userService.getAuthenticatedUser()));
     }
 

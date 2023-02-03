@@ -2,27 +2,32 @@
   <div class="row">
     <div class="col px-5">
       <div class="row">
-        <h6 class="px-0">Retrieve secured resources: admin and user allowed</h6>
-      </div>
-      <div
-        class="row"
-        [ngClass]="{
-          error: !isSuccessOnGetResource,
-          success: isSuccessOnGetResource
-        }"
-      >
-        {{ messageOnGetResource }}
+        <h6 class="px-0">Your resources</h6>
       </div>
       <div
         class="row my-2"
         *ngIf="!isSuccessOnGetResource && messageOnGetResource"
       >
+        <div class="row error">
+          {{ messageOnGetResource }}
+        </div>
         <a class="px-0" routerLink="/login">Go to login page</a>
       </div>
       <div class="row">
-        <button class="btn btn-primary" (click)="onGetResource()">
-          Get resource
-        </button>
+        <table class="table">
+          <thead>
+            <tr>
+              <td>#</td>
+              <td>Value</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let resource of resources">
+              <td>{{ resource.id }}</td>
+              <td>{{ resource.value }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <div class="col px-5">

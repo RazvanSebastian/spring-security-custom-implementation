@@ -1,6 +1,7 @@
 package edu.custom.spring.security.service.security;
 
 import edu.custom.spring.security.model.security.Role;
+import edu.custom.spring.security.model.security.RolesEnum;
 import edu.custom.spring.security.model.security.User;
 import edu.custom.spring.security.model.security.UserInfo;
 import edu.custom.spring.security.repository.security.RoleRepository;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
     public UserDetails getOrSaveNewUserBySocialAuthentication(SocialAuthentication authentication){
         User user = userRepository.findByEmail(authentication.getEmail());
         if(Objects.isNull(user)) {
-            final Role userRole = roleRepository.findByAuthority("ROLE_USER");
+            final Role userRole = roleRepository.findByAuthority(RolesEnum.USER);
             // Save info received from social platform
             UserInfo userInfo = UserInfo.builder()
                     .email(authentication.getEmail())
