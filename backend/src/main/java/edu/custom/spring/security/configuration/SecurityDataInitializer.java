@@ -44,7 +44,8 @@ public class SecurityDataInitializer implements ApplicationListener<ContextRefre
 
     private void addUser(String email, String password, Role... roles) {
         User user = new User();
-        user.setEmail(email);
+        user.setAuthenticationType(AuthenticationType.BASIC);
+        user.setUsername(email);
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         user.setRoles(Arrays.asList(roles));
         userRepository.save(user);

@@ -3,8 +3,8 @@ export interface LoginModel {
     credentials: string;
 }
 
-export interface GoogleAuthConsentUriResponseModel {
-    uri: string;
+export interface SocialAuthConsentUriModel {
+    authUri: string;
 }
 
 export interface UserInfo {

@@ -23,6 +23,6 @@ public class GithubAuthController {
      */
     @GetMapping("/consent")
     public ResponseEntity getGoogleAuthUrl() {
-        return ResponseEntity.ok(githubAuthService.getConsentAuthUriRequest());
+        return ResponseEntity.ok(githubAuthService.getConsentAuthUri());
     }
 }

@@ -5,7 +5,7 @@ import { of } from 'rxjs/internal/observable/of';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { map } from 'rxjs/internal/operators/map';
 import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
-import { GoogleAuthConsentUriResponseModel, LoginModel, SocialAuthOption, UserInfo } from '../models/auth';
+import { LoginModel, SocialAuthConsentUriModel, SocialAuthOption, UserInfo } from '../models/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +44,6 @@ export class AuthenticationService {
   }
 
   getSocialAuthRedirectUri(option: SocialAuthOption) {
-    return this.httpClient.get<GoogleAuthConsentUriResponseModel>(`/api/${option.toString()}/consent`);
+    return this.httpClient.get<SocialAuthConsentUriModel>(`/api/${option.toString()}/consent`);
   }
 }

@@ -36,7 +36,7 @@ public class AuthenticationController {
         if (Objects.nonNull(user.getUserInfo())) {
             return ResponseEntity.ok(user.getUserInfo());
         } else {
-            return ResponseEntity.ok(UserInfo.builder().email(user.getEmail()).build());
+            return ResponseEntity.ok(UserInfo.builder().email(user.getUsername()).build());
         }
     }
 

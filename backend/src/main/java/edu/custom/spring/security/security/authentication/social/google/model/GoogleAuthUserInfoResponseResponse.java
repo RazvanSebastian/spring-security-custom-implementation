@@ -1,13 +1,14 @@
 package edu.custom.spring.security.security.authentication.social.google.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import edu.custom.spring.security.security.authentication.social.model.SocialUserInfo;
+import edu.custom.spring.security.model.security.AuthenticationType;
+import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthUserInfoResponse;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GoogleUserInfoResponse implements SocialUserInfo {
+public class GoogleAuthUserInfoResponseResponse implements SocialAuthUserInfoResponse {
 
     private String id;
 
@@ -28,4 +29,8 @@ public class GoogleUserInfoResponse implements SocialUserInfo {
 
     private String locale;
 
+    @Override
+    public AuthenticationType getAuthenticationType() {
+        return AuthenticationType.GOOGLE;
+    }
 }

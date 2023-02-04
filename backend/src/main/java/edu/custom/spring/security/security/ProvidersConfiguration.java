@@ -2,9 +2,10 @@ package edu.custom.spring.security.security;
 
 import edu.custom.spring.security.security.authentication.credentials.BasicAuthenticationProvider;
 import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationProvider;
-import edu.custom.spring.security.security.authentication.social.github.GithubAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.social.SocialAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.social.github.model.GithubAuthAuthenticationToken;
 import edu.custom.spring.security.security.authentication.social.github.service.GithubAuthService;
-import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthAuthenticationToken;
 import edu.custom.spring.security.security.authentication.social.google.service.GoogleAuthService;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import edu.custom.spring.security.service.security.UserService;
@@ -36,13 +37,13 @@ public class ProvidersConfiguration {
     }
 
     @Bean
-    public GithubAuthenticationProvider githubAuthenticationProvider(){
-        return new GithubAuthenticationProvider(githubAuthService, userService);
+    public SocialAuthenticationProvider<GithubAuthAuthenticationToken> githubAuthenticationProvider() {
+        return new SocialAuthenticationProvider<>(githubAuthService, userService, GithubAuthAuthenticationToken.class);
     }
 
     @Bean
-    public GoogleAuthenticationProvider googleAuthenticationProvider(){
-        return new GoogleAuthenticationProvider(googleAuthService, userService);
+    public SocialAuthenticationProvider<GoogleAuthAuthenticationToken> googleAuthenticationProvider() {
+        return new SocialAuthenticationProvider<>(googleAuthService, userService, GoogleAuthAuthenticationToken.class);
     }
 
     @Bean

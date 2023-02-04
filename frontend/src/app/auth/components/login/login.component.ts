@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ReplaySubject, Subscription, take, tap } from 'rxjs';
-import { GoogleAuthConsentUriResponseModel, SocialAuthOption } from '../../models/auth';
+import { Subscription, take, tap } from 'rxjs';
+import { SocialAuthConsentUriModel, SocialAuthOption } from '../../models/auth';
 import { AuthenticationService } from '../../services/authentication.service';
 
 @Component({
@@ -30,8 +30,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onRedirectToGoogleConsent(option: SocialAuthOption) {
     this.authenticationService.getSocialAuthRedirectUri(option).subscribe({
-      next: (response: GoogleAuthConsentUriResponseModel) => {
-        window.location.href = response.uri;
+      next: (response: SocialAuthConsentUriModel) => {
+        window.location.href = response.authUri;
       }
     })
   }

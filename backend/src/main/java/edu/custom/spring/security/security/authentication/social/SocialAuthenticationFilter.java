@@ -1,5 +1,8 @@
-package edu.custom.spring.security.security.authentication.social.google;
+package edu.custom.spring.security.security.authentication.social;
 
+import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthenticationToken;
+import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthenticationType;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthAuthenticationToken;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import edu.custom.spring.security.security.util.CookieUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,29 +13,31 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
-public class GoogleAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class SocialAuthenticationFilter<T extends SocialAuthenticationToken & SocialAuthenticationType> extends AbstractAuthenticationProcessingFilter {
     private final String AUTHORIZATION_CODE_QUERY_PARAM_NAME = "code";
+    private final String REDIRECT_ON_AUTH_SUCCESS = "http://localhost:4200";
+    private final String REDIRECT_ON_AUTH_FAILED = "http://localhost:4200/401";
 
     private final JwtHandlerService jwtHandlerService;
+    private final Class<T> supportedAuthClass;
 
-    public GoogleAuthenticationFilter(
+    public SocialAuthenticationFilter(
             RequestMatcher requiresAuthenticationRequestMatcher,
             AuthenticationManager authenticationManager,
-            JwtHandlerService jwtHandlerService) {
+            JwtHandlerService jwtHandlerService, Class<T> supportedAuthClass) {
         super(requiresAuthenticationRequestMatcher, authenticationManager);
         this.jwtHandlerService = jwtHandlerService;
+        this.supportedAuthClass = supportedAuthClass;
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         final String authorizationCode = request.getParameter(AUTHORIZATION_CODE_QUERY_PARAM_NAME);
-        final GoogleAuthenticationToken authentication = new GoogleAuthenticationToken(authorizationCode);
-        return getAuthenticationManager().authenticate(authentication);
+        return getAuthenticationManager().authenticate(getInstanceOfSupportedClass(authorizationCode));
     }
 
     @Override
@@ -40,7 +45,7 @@ public class GoogleAuthenticationFilter extends AbstractAuthenticationProcessing
         final String jwtToken = jwtHandlerService.generateAccessToken(authResult);
         CookieUtils.addAccessTokenToCookies(response, jwtToken);
         response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-        response.setHeader("Location", "http://localhost:4200");
+        response.setHeader("Location", REDIRECT_ON_AUTH_SUCCESS);
     }
 
     @Override
@@ -49,6 +54,15 @@ public class GoogleAuthenticationFilter extends AbstractAuthenticationProcessing
         SecurityContextHolder.clearContext();
 
         response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-        response.setHeader("Location", "http://localhost:4200/401");
+        response.setHeader("Location", REDIRECT_ON_AUTH_FAILED);
+    }
+
+    private T getInstanceOfSupportedClass(String authorizationCode) {
+        try {
+            return supportedAuthClass.getConstructor(String.class).newInstance(authorizationCode);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
+            throw new RuntimeException("Internal server error");
+        }
     }
 }

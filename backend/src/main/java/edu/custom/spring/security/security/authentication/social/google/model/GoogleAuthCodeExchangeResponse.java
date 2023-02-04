@@ -1,12 +1,13 @@
 package edu.custom.spring.security.security.authentication.social.google.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthCodeExchangeResponse;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GoogleAuthCodeExchangeResponse {
+public class GoogleAuthCodeExchangeResponse implements SocialAuthCodeExchangeResponse {
 
     @JsonAlias("access_token")
     private String accessToken;

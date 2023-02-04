@@ -1,13 +1,14 @@
 package edu.custom.spring.security.security.authentication.social.github.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthCodeExchangeRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Builder
-public class GithubAuthCodeExchangeRequest {
+public class GithubAuthCodeExchangeRequest implements SocialAuthCodeExchangeRequest {
 
     @Getter
     private String code;

@@ -23,7 +23,7 @@ public class GoogleAuthController {
      */
     @GetMapping("/consent")
     public ResponseEntity getGoogleAuthUrl() {
-        return ResponseEntity.ok(googleAuthService.getConsentAuthUriRequest());
+        return ResponseEntity.ok(googleAuthService.getConsentAuthUri());
     }
 
 }

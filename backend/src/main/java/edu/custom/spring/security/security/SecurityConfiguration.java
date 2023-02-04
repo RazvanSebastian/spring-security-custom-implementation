@@ -5,10 +5,10 @@ import edu.custom.spring.security.security.authentication.credentials.BasicAuthe
 import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationFilter;
 import edu.custom.spring.security.security.authentication.jwt.JwtAuthenticationProvider;
 import edu.custom.spring.security.security.authentication.jwt.SkipRequestMatcher;
-import edu.custom.spring.security.security.authentication.social.github.GithubAuthenticationFilter;
-import edu.custom.spring.security.security.authentication.social.github.GithubAuthenticationProvider;
-import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationFilter;
-import edu.custom.spring.security.security.authentication.social.google.GoogleAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.social.SocialAuthenticationFilter;
+import edu.custom.spring.security.security.authentication.social.SocialAuthenticationProvider;
+import edu.custom.spring.security.security.authentication.social.github.model.GithubAuthAuthenticationToken;
+import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthAuthenticationToken;
 import edu.custom.spring.security.security.handler.CustomAccessDeniedHandler;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import edu.custom.spring.security.security.util.CookieUtils;
@@ -44,8 +44,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final String logoutPath;
     private final BasicAuthenticationProvider basicAuthenticationProvider;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
-    private final GithubAuthenticationProvider githubAuthenticationProvider;
-    private final GoogleAuthenticationProvider googleAuthenticationProvider;
+    private final SocialAuthenticationProvider githubAuthenticationProvider;
+    private final SocialAuthenticationProvider googleAuthenticationProvider;
     private final JwtHandlerService jwtHandlerService;
 
     @Autowired
@@ -54,7 +54,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             final @Value("${security.paths.logout}") String logoutPath,
             final BasicAuthenticationProvider basicAuthenticationProvider,
             JwtAuthenticationProvider jwtAuthenticationProvider,
-            GithubAuthenticationProvider githubAuthenticationProvider, GoogleAuthenticationProvider googleAuthenticationProvider,
+            SocialAuthenticationProvider githubAuthenticationProvider,
+            SocialAuthenticationProvider googleAuthenticationProvider,
             JwtHandlerService jwtHandlerService) {
         this.pathsToSkip = pathsToSkip;
         this.logoutPath = logoutPath;
@@ -100,14 +101,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BasicAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
     }
 
-    private GithubAuthenticationFilter githubAuthenticationFilter(final AuthenticationManager authenticationManager){
+    private SocialAuthenticationFilter githubAuthenticationFilter(final AuthenticationManager authenticationManager){
         final RequestMatcher requestMatcher = new AntPathRequestMatcher("/github-auth/consent/callback", HttpMethod.GET.toString());
-        return new GithubAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
+        return new SocialAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService, GithubAuthAuthenticationToken.class);
     }
 
-    private GoogleAuthenticationFilter googleAuthenticationFilter(final AuthenticationManager authenticationManager) {
+    private SocialAuthenticationFilter googleAuthenticationFilter(final AuthenticationManager authenticationManager) {
         final RequestMatcher requestMatcher = new AntPathRequestMatcher("/google-auth/consent/callback", HttpMethod.GET.toString());
-        return new GoogleAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
+        return new SocialAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService, GoogleAuthAuthenticationToken.class);
     }
 
     private JwtAuthenticationFilter jwtAuthenticationFilter(final AuthenticationManager authenticationManager) {

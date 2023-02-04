@@ -1,15 +1,6 @@
 package edu.custom.spring.security.security.authentication.social.github.model;
 
+import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthConsentUri;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class GithubAuthConsentUriRequest {
-
-    private String uri;
-}

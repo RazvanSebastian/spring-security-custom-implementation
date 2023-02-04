@@ -1,13 +1,14 @@
 package edu.custom.spring.security.security.authentication.social.google.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthCodeExchangeRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Builder
-public class GoogleAuthCodeExchangeRequest {
+public class GoogleAuthCodeExchangeRequest implements SocialAuthCodeExchangeRequest {
 
     @Getter
     private String code;

@@ -1,4 +1,4 @@
-package edu.custom.spring.security.security.authentication.social.google.model;
+package edu.custom.spring.security.security.authentication.social.base.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GoogleAuthConsentUriRequest {
+public class SocialAuthConsentUri {
 
-    private String uri;
+    private String authUri;
 }

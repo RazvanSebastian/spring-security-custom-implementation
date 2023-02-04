@@ -1,13 +1,10 @@
 package edu.custom.spring.security.service.security;
 
-import edu.custom.spring.security.model.security.Role;
-import edu.custom.spring.security.model.security.RolesEnum;
-import edu.custom.spring.security.model.security.User;
-import edu.custom.spring.security.model.security.UserInfo;
+import edu.custom.spring.security.model.security.*;
 import edu.custom.spring.security.repository.security.RoleRepository;
 import edu.custom.spring.security.repository.security.UserInfoRepository;
 import edu.custom.spring.security.repository.security.UserRepository;
-import edu.custom.spring.security.security.authentication.social.model.SocialUserInfo;
+import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthUserInfoResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -37,8 +34,9 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public UserDetails getOrSaveNewUserBySocialAuthentication(SocialUserInfo authentication){
-        User user = userRepository.findByEmail(authentication.getEmail());
+    public UserDetails getOrSave(SocialAuthUserInfoResponse authentication, AuthenticationType authenticationType){
+        final String socialUsername = authentication.getEmail() + "_" + authenticationType.getValue();
+        User user = userRepository.find(socialUsername);
         if(Objects.isNull(user)) {
             final Role userRole = roleRepository.findByAuthority(RolesEnum.USER);
             // Save info received from social platform
@@ -50,11 +48,12 @@ public class UserServiceImpl implements UserService {
                     .build();
             userInfo = userInfoRepository.save(userInfo);
             // Save new user signed in with social platform
-            user = new User();
-            user.setEmail(authentication.getEmail());
-            user.setRoles(Arrays.asList(userRole));
-            user.setUserInfo(userInfo);
-
+            user = User.builder()
+                    .username(socialUsername)
+                    .roles(Arrays.asList(userRole))
+                    .userInfo(userInfo)
+                    .authenticationType(authenticationType)
+                    .build();
             user = userRepository.save(user);
         }
         return user;
@@ -63,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getAuthenticatedUser() {
         final String principal = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final UserDetails userDetails = userRepository.findByEmail(principal);
+        final UserDetails userDetails = userRepository.find(principal);
         return (User) userDetails;
     }
 }

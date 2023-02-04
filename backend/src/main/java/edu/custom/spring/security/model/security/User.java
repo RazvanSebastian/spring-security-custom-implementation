@@ -1,9 +1,7 @@
 package edu.custom.spring.security.model.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +14,9 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class User implements UserDetails {
 
@@ -24,12 +25,15 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore
     @Column(unique = true)
-    private String email;
+    @JsonIgnore
+    private String username;
 
     @JsonIgnore
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private AuthenticationType authenticationType;
 
     @JsonIgnore
     private boolean accountNonExpired;
@@ -61,13 +65,9 @@ public class User implements UserDetails {
         return this.password;
     }
 
-    /**
-     * The email will be used as username since it is unique also on social auth.
-     * @return
-     */
     @Override
     public String getUsername() {
-        return this.email;
+        return this.username;
     }
 
     @Override
