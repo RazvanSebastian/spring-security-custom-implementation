@@ -1,5 +1,6 @@
 package edu.custom.spring.security.service.security;
 
+import edu.custom.spring.security.model.entity.security.User;
 import edu.custom.spring.security.repository.security.RoleRepository;
 import edu.custom.spring.security.repository.security.UserInfoRepository;
 import edu.custom.spring.security.repository.security.UserRepository;
@@ -8,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static org.springframework.util.ObjectUtils.isEmpty;
+import java.util.Optional;
 
 @Service
 public class SecurityUserDetailsService implements UserDetailsService {
@@ -25,14 +26,12 @@ public class SecurityUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        final UserDetails userDetails = userRepository.find(username);
-        if (!isEmpty(userDetails)) {
-            return userDetails;
+        final Optional<User> optionalUser = userRepository.find(username);
+        if (optionalUser.isPresent()) {
+            return optionalUser.get();
         } else {
             throw new UsernameNotFoundException(String.format("User with email %s does not exist!", username));
         }
     }
-
-
 
 }

@@ -1,7 +1,9 @@
-package edu.custom.spring.security.model.resource;
+package edu.custom.spring.security.model.entity.resource;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import edu.custom.spring.security.model.security.User;
+import edu.custom.spring.security.model.entity.Audit;
+import edu.custom.spring.security.model.entity.BaseEntity;
+import edu.custom.spring.security.model.entity.security.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,11 +13,7 @@ import javax.persistence.*;
 @Setter
 @Entity(name = "SecuredResource")
 @Table(name = "secured_resource")
-public class SecuredResource {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class SecuredResource extends BaseEntity {
 
     private String value;
 
@@ -23,5 +21,8 @@ public class SecuredResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Embedded
+    private Audit audit = new Audit();
 
 }

@@ -19,12 +19,18 @@
             <tr>
               <td>#</td>
               <td>Value</td>
+              <td>CreatedOn</td>
+              <td>CreatedBy</td>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let resource of resources">
               <td>{{ resource.id }}</td>
               <td>{{ resource.value }}</td>
+              <td>
+                {{ resource.audit.createdOn | date : "yyyy.MM.dd hh:mm" }}
+              </td>
+              <td>{{ resource.audit.createdBy }}</td>
             </tr>
           </tbody>
         </table>

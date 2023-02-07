@@ -1,7 +1,7 @@
 package edu.custom.spring.security.controller;
 
-import edu.custom.spring.security.model.security.User;
-import edu.custom.spring.security.model.security.UserInfo;
+import edu.custom.spring.security.model.entity.security.User;
+import edu.custom.spring.security.model.entity.security.UserInfo;
 import edu.custom.spring.security.security.authentication.credentials.BasicAuthenticationPayload;
 import edu.custom.spring.security.service.security.UserService;
 import org.springframework.http.HttpStatus;

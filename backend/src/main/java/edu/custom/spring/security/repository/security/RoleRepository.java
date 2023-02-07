@@ -1,8 +1,7 @@
 package edu.custom.spring.security.repository.security;
 
-import edu.custom.spring.security.model.security.Role;
-import edu.custom.spring.security.model.security.RolesEnum;
-import edu.custom.spring.security.model.security.User;
+import edu.custom.spring.security.model.entity.security.Role;
+import edu.custom.spring.security.model.entity.security.RolesEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

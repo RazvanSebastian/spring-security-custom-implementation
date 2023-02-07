@@ -25,6 +25,7 @@ import { ResourcesComponent } from './resources/component/resources.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    DatePipe
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true },

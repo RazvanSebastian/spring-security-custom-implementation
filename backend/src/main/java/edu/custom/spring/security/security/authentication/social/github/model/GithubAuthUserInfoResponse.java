@@ -1,8 +1,8 @@
 package edu.custom.spring.security.security.authentication.social.github.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import edu.custom.spring.security.model.security.AuthenticationType;
-import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthUserInfoResponse;
+import edu.custom.spring.security.model.entity.security.AuthenticationType;
+import edu.custom.spring.security.security.authentication.social.base.model.AbstractSocialAuthUserInfoResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class GithubAuthUserInfoResponse implements SocialAuthUserInfoResponse {
+public class GithubAuthUserInfoResponse extends AbstractSocialAuthUserInfoResponse {
 
     private String id;
 

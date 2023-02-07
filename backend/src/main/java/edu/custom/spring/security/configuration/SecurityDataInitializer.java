@@ -1,6 +1,6 @@
 package edu.custom.spring.security.configuration;
 
-import edu.custom.spring.security.model.security.*;
+import edu.custom.spring.security.model.entity.security.*;
 import edu.custom.spring.security.repository.security.PrivilegeRepository;
 import edu.custom.spring.security.repository.security.RoleRepository;
 import edu.custom.spring.security.repository.security.UserRepository;

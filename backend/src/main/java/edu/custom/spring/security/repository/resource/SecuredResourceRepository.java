@@ -1,6 +1,6 @@
 package edu.custom.spring.security.repository.resource;
 
-import edu.custom.spring.security.model.resource.SecuredResource;
+import edu.custom.spring.security.model.entity.resource.SecuredResource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

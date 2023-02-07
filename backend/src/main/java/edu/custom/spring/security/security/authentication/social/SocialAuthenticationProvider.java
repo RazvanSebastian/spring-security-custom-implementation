@@ -28,8 +28,8 @@ public class SocialAuthenticationProvider<T extends SocialAuthenticationToken> i
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         if (isAuthenticationPayloadValid(authentication)) {
             final SocialAuthenticationToken authenticationToken = (SocialAuthenticationToken) authentication;
-            final SocialAuthUserInfoResponse userInfo = socialAuthService.getUserInfo(authenticationToken.getAuthorizationCode());
-            final UserDetails userDetails = userService.getOrSave(userInfo, userInfo.getAuthenticationType());
+            final SocialAuthUserInfoResponse socialAuthUserInfoResponse = socialAuthService.getUserInfo(authenticationToken.getAuthorizationCode());
+            final UserDetails userDetails = userService.getOrSave(socialAuthUserInfoResponse);
             return new SocialAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
         } else {
             throw new InternalAuthenticationServiceException("Social authentication failed");

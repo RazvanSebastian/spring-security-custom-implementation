@@ -1,17 +1,17 @@
-package edu.custom.spring.security.model.security;
+package edu.custom.spring.security.model.entity.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Getter
 @Setter
 @Entity
-public class Privilege implements GrantedAuthority {
+public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,15 @@ public class Privilege implements GrantedAuthority {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private PrivilegesEnum authority;
+    private RolesEnum authority;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "roles_privileges",
+            joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id")
+    )
+    private Collection<Privilege> privileges;
 
     @Override
     public String getAuthority() {
@@ -31,8 +39,8 @@ public class Privilege implements GrantedAuthority {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof Privilege) {
-            return this.authority.equals(((Privilege) obj).authority);
+        if (obj instanceof Role) {
+            return this.authority.equals(((Role) obj).authority);
         }
         return false;
     }

@@ -1,4 +1,4 @@
-package edu.custom.spring.security.model.security;
+package edu.custom.spring.security.model.entity.security;
 
 public enum RolesEnum {
 

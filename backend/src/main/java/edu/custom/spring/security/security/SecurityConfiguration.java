@@ -9,6 +9,7 @@ import edu.custom.spring.security.security.authentication.social.SocialAuthentic
 import edu.custom.spring.security.security.authentication.social.SocialAuthenticationProvider;
 import edu.custom.spring.security.security.authentication.social.github.model.GithubAuthAuthenticationToken;
 import edu.custom.spring.security.security.authentication.social.google.model.GoogleAuthAuthenticationToken;
+import edu.custom.spring.security.security.csrf.CustomCsrfFilterWrapper;
 import edu.custom.spring.security.security.handler.CustomAccessDeniedHandler;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import edu.custom.spring.security.security.util.CookieUtils;
@@ -25,12 +26,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.util.matcher.*;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.util.Arrays;
 import java.util.Set;
 
 @EnableWebSecurity
@@ -40,36 +39,40 @@ import java.util.Set;
         jsr250Enabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final Set<String> pathsToSkip;
+    private final Set<String> authPathsToSkip;
     private final String logoutPath;
     private final BasicAuthenticationProvider basicAuthenticationProvider;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
     private final SocialAuthenticationProvider githubAuthenticationProvider;
     private final SocialAuthenticationProvider googleAuthenticationProvider;
     private final JwtHandlerService jwtHandlerService;
+    private final CustomCsrfFilterWrapper customCsrfFilterWrapper;
 
     @Autowired
     public SecurityConfiguration(
-            final @Value("#{'${security.paths.to.skip}'.split(',')}") Set<String> pathsToSkip,
+            final @Value("#{'${security.paths.auth.to.skip}'.split(',')}") Set<String> authPathsToSkip,
             final @Value("${security.paths.logout}") String logoutPath,
             final BasicAuthenticationProvider basicAuthenticationProvider,
-            JwtAuthenticationProvider jwtAuthenticationProvider,
-            SocialAuthenticationProvider githubAuthenticationProvider,
-            SocialAuthenticationProvider googleAuthenticationProvider,
-            JwtHandlerService jwtHandlerService) {
-        this.pathsToSkip = pathsToSkip;
+            final JwtAuthenticationProvider jwtAuthenticationProvider,
+            final SocialAuthenticationProvider githubAuthenticationProvider,
+            final SocialAuthenticationProvider googleAuthenticationProvider,
+            final JwtHandlerService jwtHandlerService,
+            final CustomCsrfFilterWrapper customCsrfFilterWrapper) {
+        this.authPathsToSkip = authPathsToSkip;
         this.logoutPath = logoutPath;
         this.basicAuthenticationProvider = basicAuthenticationProvider;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
         this.githubAuthenticationProvider = githubAuthenticationProvider;
         this.googleAuthenticationProvider = googleAuthenticationProvider;
         this.jwtHandlerService = jwtHandlerService;
+        this.customCsrfFilterWrapper = customCsrfFilterWrapper;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        final String[] allowedUrls = pathsToSkip.toArray(new String[0]);
+        final String[] allowedUrls = authPathsToSkip.toArray(new String[0]);
         http.cors()
+                .and().headers().frameOptions().disable() // Only for h2 testing
                 .and().exceptionHandling()
                 .accessDeniedHandler(new CustomAccessDeniedHandler())
                 .and().csrf().disable()
@@ -80,7 +83,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(customCsrfFilter(), CsrfFilter.class)
+                .addFilterBefore(customCsrfFilterWrapper.getInstance(), CsrfFilter.class)
                 .addFilterBefore(basicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(githubAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(googleAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
@@ -101,7 +104,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BasicAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService);
     }
 
-    private SocialAuthenticationFilter githubAuthenticationFilter(final AuthenticationManager authenticationManager){
+    private SocialAuthenticationFilter githubAuthenticationFilter(final AuthenticationManager authenticationManager) {
         final RequestMatcher requestMatcher = new AntPathRequestMatcher("/github-auth/consent/callback", HttpMethod.GET.toString());
         return new SocialAuthenticationFilter(requestMatcher, authenticationManager, jwtHandlerService, GithubAuthAuthenticationToken.class);
     }
@@ -112,7 +115,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     private JwtAuthenticationFilter jwtAuthenticationFilter(final AuthenticationManager authenticationManager) {
-        final SkipRequestMatcher skipRequestMatcher = new SkipRequestMatcher(pathsToSkip);
+        final SkipRequestMatcher skipRequestMatcher = new SkipRequestMatcher(authPathsToSkip);
         return new JwtAuthenticationFilter(skipRequestMatcher, authenticationManager);
     }
 
@@ -120,33 +123,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return (LogoutConfigurer<HttpSecurity> logoutConfigure) ->
                 logoutConfigure
                         .logoutUrl(logoutPath)
-                        .logoutSuccessHandler((request, response, authentication) -> {})
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                        })
                         .invalidateHttpSession(true)
                         .addLogoutHandler((request, response, authentication) -> CookieUtils.removeAccessTokenFromCookies(response));
     }
-
-    private CsrfFilter customCsrfFilter() {
-        RequestMatcher skipRequestMatcher = new SkipRequestMatcher(
-                Arrays.asList(
-                        new RequestHeaderRequestMatcher(
-                                "Referer",
-                                "http://localhost:8080/api/swagger-ui/index.html"
-                        ),
-                        new AntPathRequestMatcher("/swagger-ui/**"),
-                        new AntPathRequestMatcher("/google-auth/consent/callback"),
-                        new AntPathRequestMatcher("/github-auth/consent/callback")
-        ));
-        CsrfFilter csrfFilter = new CsrfFilter(csrfTokenRepository());
-        csrfFilter.setAccessDeniedHandler(new CustomAccessDeniedHandler());
-        csrfFilter.setRequireCsrfProtectionMatcher(skipRequestMatcher);
-        return csrfFilter;
-    }
-
-    private CsrfTokenRepository csrfTokenRepository() {
-        CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
-        csrfTokenRepository.setCookieHttpOnly(false);
-        csrfTokenRepository.setCookiePath("/");
-        return csrfTokenRepository;
-    }
-
 }

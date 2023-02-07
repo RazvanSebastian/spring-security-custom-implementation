@@ -1,6 +1,5 @@
 package edu.custom.spring.security.controller;
 
-import edu.custom.spring.security.model.resource.SecuredResource;
 import edu.custom.spring.security.service.resource.SecuredResourceService;
 import edu.custom.spring.security.service.security.UserService;
 import org.springframework.http.ResponseEntity;

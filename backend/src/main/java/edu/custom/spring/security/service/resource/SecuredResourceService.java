@@ -1,7 +1,7 @@
 package edu.custom.spring.security.service.resource;
 
-import edu.custom.spring.security.model.resource.SecuredResource;
-import edu.custom.spring.security.model.security.User;
+import edu.custom.spring.security.model.entity.resource.SecuredResource;
+import edu.custom.spring.security.model.entity.security.User;
 
 import java.util.List;
 

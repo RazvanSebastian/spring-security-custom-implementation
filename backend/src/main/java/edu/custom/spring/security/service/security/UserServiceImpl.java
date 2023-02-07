@@ -1,17 +1,22 @@
 package edu.custom.spring.security.service.security;
 
-import edu.custom.spring.security.model.security.*;
+import edu.custom.spring.security.model.entity.security.Role;
+import edu.custom.spring.security.model.entity.security.RolesEnum;
+import edu.custom.spring.security.model.entity.security.User;
+import edu.custom.spring.security.model.entity.security.UserInfo;
 import edu.custom.spring.security.repository.security.RoleRepository;
 import edu.custom.spring.security.repository.security.UserInfoRepository;
 import edu.custom.spring.security.repository.security.UserRepository;
 import edu.custom.spring.security.security.authentication.social.base.model.SocialAuthUserInfoResponse;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -34,35 +39,38 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public UserDetails getOrSave(SocialAuthUserInfoResponse authentication, AuthenticationType authenticationType){
-        final String socialUsername = authentication.getEmail() + "_" + authenticationType.getValue();
-        User user = userRepository.find(socialUsername);
-        if(Objects.isNull(user)) {
+    public UserDetails getOrSave(SocialAuthUserInfoResponse authentication) {
+        final String socialUsername = authentication.getUsername();
+        Optional<User> optionalUser = userRepository.find(socialUsername);
+        if (optionalUser.isEmpty()) {
             final Role userRole = roleRepository.findByAuthority(RolesEnum.USER);
-            // Save info received from social platform
-            UserInfo userInfo = UserInfo.builder()
-                    .email(authentication.getEmail())
-                    .familyName(authentication.getFamilyName())
-                    .givenName(authentication.getGivenName())
-                    .picture(authentication.getPicture())
-                    .build();
-            userInfo = userInfoRepository.save(userInfo);
+            final UserInfo userInfo = saveUserInfo(authentication);
             // Save new user signed in with social platform
-            user = User.builder()
+            final User user = User.builder()
                     .username(socialUsername)
                     .roles(Arrays.asList(userRole))
                     .userInfo(userInfo)
-                    .authenticationType(authenticationType)
+                    .authenticationType(authentication.getAuthenticationType())
                     .build();
-            user = userRepository.save(user);
+            return userRepository.save(user);
+        } else {
+            return optionalUser.get();
         }
-        return user;
     }
 
     @Override
     public User getAuthenticatedUser() {
         final String principal = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final UserDetails userDetails = userRepository.find(principal);
-        return (User) userDetails;
+        return userRepository.find(principal).orElseThrow(() -> new BadCredentialsException("Authorization failed"));
+    }
+
+    private UserInfo saveUserInfo(@NotNull SocialAuthUserInfoResponse authentication) {
+        UserInfo userInfo = UserInfo.builder()
+                .email(authentication.getEmail())
+                .familyName(authentication.getFamilyName())
+                .givenName(authentication.getGivenName())
+                .picture(authentication.getPicture())
+                .build();
+        return userInfoRepository.save(userInfo);
     }
 }
