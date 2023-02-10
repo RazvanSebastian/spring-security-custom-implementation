@@ -22,6 +22,14 @@
             >Resources</a
           >
         </li>
+        <li class="nav-item" *ngIf="isAdmin">
+          <a
+            class="nav-link"
+            aria-current="page"
+            [routerLink]="['/admin-dashboard']"
+            >Admin dashboard</a
+          >
+        </li>
       </ul>
       <ul class="navbar-nav ms-auto">
         <ng-template [ngIf]="isAuthenticated">
@@ -48,25 +56,26 @@
                   <div class="d-flex">
                     <div class="p-2 flex-fill">
                       <img
-                        [src]="userInfo.picture"
+                        [src]="userClaims.userInfo.picture"
                         alt="Avatar"
                         class="avatar"
                       />
                     </div>
                     <div class="p-2 flex-fill align-self-center">
                       <h4>Welcome</h4>
-                      <h6>{{ userInfo.givenName }}</h6>
+                      <h6>{{ userClaims.userInfo.givenName }}</h6>
                     </div>
                   </div>
                 </li>
                 <li>
                   <button class="dropdown-item" type="button">
-                    {{ userInfo.email }}
+                    {{ userClaims.userInfo.email }}
                   </button>
                 </li>
                 <li>
                   <button class="dropdown-item" type="button">
-                    {{ userInfo.givenName }} {{ userInfo.familyName }}
+                    {{ userClaims.userInfo.givenName }}
+                    {{ userClaims.userInfo.familyName }}
                   </button>
                 </li>
                 <li>

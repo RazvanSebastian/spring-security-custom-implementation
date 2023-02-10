@@ -1,15 +1,15 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SecuredResourceModel } from '../model';
-import { ResourcesService } from '../service/resources.service';
+import { SecuredResourceModel } from '../../model';
+import { ResourcesService } from '../../service/resources.service';
 
 @Component({
-  selector: 'app-resources',
-  templateUrl: './resources.component.html',
-  styleUrls: ['./resources.component.css']
+  selector: 'app-user-resources',
+  templateUrl: './user-resources.component.html',
+  styleUrls: ['./user-resources.component.css']
 })
-export class ResourcesComponent implements OnInit {
+export class UserResourcesComponent implements OnInit {
 
   messageOnGetResource: string;
   isSuccessOnGetResource: boolean;

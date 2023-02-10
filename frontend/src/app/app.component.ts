@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of, switchMap, tap } from 'rxjs';
-import { UserInfo } from './auth/models/auth';
+import { filter, Observable, of, switchMap, tap } from 'rxjs';
+import { UserClaimsResponseModel, UserInfo } from './auth/models/auth';
 import { AuthenticationService } from './auth/services/authentication.service';
 
 @Component({
@@ -12,12 +12,18 @@ import { AuthenticationService } from './auth/services/authentication.service';
 export class AppComponent {
   title = 'frontend';
   isAuthenticated: boolean;
-  userInfo: UserInfo;
+  userClaims: UserClaimsResponseModel;
+  isAdmin: boolean;
 
   constructor(private authService: AuthenticationService, private router: Router) {
     authService.getCsrf().pipe().subscribe();
     this.authService.isAuthenticated$.subscribe(value => this.isAuthenticated = value);
-    this.authService.authenticatedUserInfo$.subscribe(value => this.userInfo = value);
+    this.authService.authenticatedUserInfo$
+      .pipe(filter(value => !!value && Object.keys(value).length > 0))
+      .subscribe(value => {
+        this.userClaims = value
+        this.isAdmin = !!this.userClaims.grantedAuthorities.find(grantedAuthority => grantedAuthority.authority.startsWith("ROLE_ADMIN"));
+      });
   }
 
   onLogout() {

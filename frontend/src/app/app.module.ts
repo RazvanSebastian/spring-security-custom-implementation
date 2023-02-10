@@ -10,28 +10,25 @@ import { UnauthorizedPageComponent } from './auth/components/unauthorized-page/u
 import { HttpRequestInterceptor } from './auth/interceptors/auth.interceptor';
 import { HttpXsrfInterceptor } from './auth/interceptors/csrf.interceptor';
 import { HomeComponent } from './home/home.component';
-
-import { ResourcesComponent } from './resources/component/resources.component';
+import { ResourcesModule } from './resources/resources.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    ResourcesComponent,
     UnauthorizedPageComponent,
-    HomeComponent
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    DatePipe
+    ResourcesModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpXsrfInterceptor, multi: true },
-    DatePipe
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

@@ -1,8 +1,13 @@
 package edu.custom.spring.security.service.resource;
 
+import edu.custom.spring.security.model.entity.dto.PageDto;
 import edu.custom.spring.security.model.entity.resource.SecuredResource;
 import edu.custom.spring.security.model.entity.security.User;
 import edu.custom.spring.security.repository.resource.SecuredResourceRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,13 +21,24 @@ public class SecuredResourceServiceImpl implements SecuredResourceService {
     }
 
     @Override
-    public List<SecuredResource> getAllSecuredResources() {
-        return securedResourceRepository.findAll();
+    public List<SecuredResource> getAllSecuredResources(final User user) {
+        return securedResourceRepository.findAll(user.getId());
     }
 
     @Override
-    public List<SecuredResource> getAllSecuredResources(User user) {
-        return securedResourceRepository.findAll(user.getId());
+    public PageDto<SecuredResource> getAllSecuredResources(final String searchedUserName, final String searchedValue, final Integer pageIndex, final Integer pageSize, final Sort.Direction sortDirection) {
+        Sort sort = Sort.by("value");
+        if (sortDirection.isAscending()) {
+            sort = sort.ascending();
+        }
+        Pageable sortedByResourceValue = PageRequest.of(pageIndex, pageSize, sort);
+        Page<SecuredResource> page = securedResourceRepository.findAll(searchedValue, searchedUserName, sortedByResourceValue);
+        return PageDto.<SecuredResource>builder()
+                .currentPage(page.getNumber())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .content(page.getContent())
+                .build();
     }
 
     @Override

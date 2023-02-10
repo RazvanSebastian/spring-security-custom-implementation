@@ -1,0 +1,46 @@
+<div class="row">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <li
+        class="page-item"
+        [ngClass]="{ disabled: selected === 0 }"
+        (click)="previous()"
+      >
+        <a class="page-link">Previous</a>
+      </li>
+      <ng-container *ngFor="let item of array; index as i">
+        <!-- Show left dots on middle -->
+        <li class="page-item" *ngIf="i === selected - 2 && selected >= 4">
+          <a class="page-link">...</a>
+        </li>
+        <!-- Selected page; on middle we want to show only the 2 page index neighbours and the first and last page index -->
+        <li
+          class="page-item"
+          [ngClass]="{ active: array[i] }"
+          [hidden]="
+            (i >= selected + 3 || i < selected - 2) &&
+            i !== 0 &&
+            i !== totalPages - 1
+          "
+          (click)="selectPage(i)"
+        >
+          <a class="page-link">{{ i + 1 }}</a>
+        </li>
+        <!-- Show right dots on middle -->
+        <li
+          class="page-item"
+          *ngIf="i === selected + 3 && selected <= totalPages - 5"
+        >
+          <a class="page-link">...</a>
+        </li>
+      </ng-container>
+      <li
+        class="page-item"
+        [ngClass]="{ disabled: selected === totalPages - 1 }"
+        (click)="next()"
+      >
+        <a class="page-link">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>

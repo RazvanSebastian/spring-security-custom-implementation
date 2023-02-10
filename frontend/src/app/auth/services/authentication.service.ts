@@ -5,7 +5,7 @@ import { of } from 'rxjs/internal/observable/of';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { map } from 'rxjs/internal/operators/map';
 import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
-import { LoginModel, SocialAuthConsentUriModel, SocialAuthOption, UserInfo } from '../models/auth';
+import { LoginModel, SocialAuthConsentUriModel, SocialAuthOption, UserClaimsResponseModel, UserInfo } from '../models/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ import { LoginModel, SocialAuthConsentUriModel, SocialAuthOption, UserInfo } fro
 export class AuthenticationService {
 
   isAuthenticated$ = new ReplaySubject<boolean>(1);
-  authenticatedUserInfo$ = new BehaviorSubject<UserInfo>({} as UserInfo);
+  authenticatedUserInfo$ = new BehaviorSubject<UserClaimsResponseModel>({} as UserClaimsResponseModel);
 
   constructor(private httpClient: HttpClient) {
     this.authDetails().pipe(
@@ -26,7 +26,7 @@ export class AuthenticationService {
   }
 
   authDetails() {
-    return this.httpClient.get<UserInfo>('/api/auth/details').pipe(
+    return this.httpClient.get<UserClaimsResponseModel>('/api/auth/details').pipe(
       tap(userInfo => this.authenticatedUserInfo$.next(userInfo))
     );
   }

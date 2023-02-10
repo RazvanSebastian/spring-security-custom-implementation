@@ -1,14 +1,17 @@
 package edu.custom.spring.security.controller;
 
+import edu.custom.spring.security.model.entity.dto.security.UserClaimsDto;
 import edu.custom.spring.security.model.entity.security.User;
 import edu.custom.spring.security.model.entity.security.UserInfo;
 import edu.custom.spring.security.security.authentication.credentials.BasicAuthenticationPayload;
 import edu.custom.spring.security.service.security.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/auth")
@@ -32,12 +35,7 @@ public class AuthenticationController {
 
     @GetMapping("/details")
     public ResponseEntity getUserDetails() {
-        User user = userService.getAuthenticatedUser();
-        if (Objects.nonNull(user.getUserInfo())) {
-            return ResponseEntity.ok(user.getUserInfo());
-        } else {
-            return ResponseEntity.ok(UserInfo.builder().email(user.getUsername()).build());
-        }
+        return ResponseEntity.ok(userService.getUserClaims());
     }
 
     @GetMapping("/logout")

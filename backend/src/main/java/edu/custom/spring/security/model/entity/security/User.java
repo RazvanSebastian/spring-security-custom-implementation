@@ -1,6 +1,7 @@
 package edu.custom.spring.security.model.entity.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.custom.spring.security.model.entity.Audit;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,6 +33,7 @@ public class User implements UserDetails {
     @JsonIgnore
     private String password;
 
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     private AuthenticationType authenticationType;
 
@@ -43,6 +45,9 @@ public class User implements UserDetails {
 
     @JsonIgnore
     private boolean credentialsNonExpired;
+
+    @Embedded
+    private Audit audit = new Audit();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "userInfo_id", referencedColumnName = "id")

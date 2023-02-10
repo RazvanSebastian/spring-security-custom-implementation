@@ -3,9 +3,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/components/login/login.component';
 import { UnauthorizedPageComponent } from './auth/components/unauthorized-page/unauthorized-page.component';
-import { AuthGuard } from './auth/guards/auth-guard';
+import { AdminAuthGuard } from './auth/guards/admin-auth.guard';
+import { UserAuthGuard } from './auth/guards/user-auth.guard';
 import { HomeComponent } from './home/home.component';
-import { ResourcesComponent } from './resources/component/resources.component';
+import { AdminResourcesComponent } from './resources/components/admin/admin-resources.component';
+import { UserResourcesComponent } from './resources/components/user/user-resources.component';
 
 const routes: Routes = [
   {
@@ -22,8 +24,13 @@ const routes: Routes = [
   },
   {
     path: 'resources',
-    component: ResourcesComponent,
-    canActivate: [AuthGuard]
+    component: UserResourcesComponent,
+    canActivate: [UserAuthGuard]
+  },
+  {
+    path: 'admin-dashboard',
+    component: AdminResourcesComponent,
+    canActivate: [AdminAuthGuard]
   },
   {
     path: '',
@@ -40,6 +47,6 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule, ReactiveFormsModule],
-  providers: [AuthGuard]
+  providers: [UserAuthGuard, AdminAuthGuard]
 })
 export class AppRoutingModule { }

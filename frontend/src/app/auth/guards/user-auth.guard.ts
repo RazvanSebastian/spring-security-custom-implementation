@@ -4,9 +4,9 @@ import { catchError, map, Observable, of, tap } from "rxjs";
 import { AuthenticationService } from "../services/authentication.service";
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class UserAuthGuard implements CanActivate {
 
-  constructor(private authenticationService: AuthenticationService, private router: Router){}
+  constructor(private authenticationService: AuthenticationService, private router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     return this.authenticationService.authDetails().pipe(

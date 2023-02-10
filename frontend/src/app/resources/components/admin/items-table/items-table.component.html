@@ -1,0 +1,133 @@
+<div class="row">
+  <form [formGroup]="formGroup" *ngIf="formGroup">
+    <div class="row">
+      <div class="col">
+        <div class="row">
+          <div class="input-group mt-3">
+            <span class="input-group-text"> Page size </span>
+            <select
+              class="form-select"
+              aria-label="Page size"
+              formControlName="pageSize"
+            >
+              <option
+                *ngFor="let item of pageSizeSelectOptions"
+                [ngValue]="item"
+              >
+                {{ item }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-group mt-3">
+            <span class="input-group-text"> Page sort </span>
+            <select
+              class="form-select"
+              aria-label="Sort"
+              formControlName="sortDirection"
+            >
+              <option *ngFor="let item of pageSortOptions" [ngValue]="item">
+                {{ item }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="row mt-3">
+          <input
+            type="text"
+            class="form-control"
+            id="seachByValue"
+            placeholder="Search by value"
+            name="searchedValue"
+            formControlName="searchedValue"
+          />
+        </div>
+        <div class="row mt-3">
+          <input
+            type="text"
+            class="form-control"
+            id="seachByUser"
+            placeholder="Search by username"
+            name="searchedUserName"
+            formControlName="searchedUserName"
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="table-responsive-md">
+    <table class="table">
+      <thead>
+        <tr>
+          <td>#</td>
+          <td>Value</td>
+          <td>CreatedOn</td>
+          <td>CreatedBy</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          class="tr-zoom"
+          *ngFor="let resource of content"
+          (click)="onSelectedItem(resource)"
+        >
+          <td>{{ resource.id }}</td>
+          <td>{{ resource.value }}</td>
+          <td>
+            {{ resource.audit.createdOn | date : "yyyy.MM.dd hh:mm" }}
+          </td>
+          <td>{{ resource.audit.createdBy }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <app-pagination
+      [totalPages]="totalPages"
+      (pageChange)="onPageChange($event)"
+    ></app-pagination>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  [id]="selectedResourceModalId"
+  tabindex="-1"
+  aria-labelledby="selectedResourceModal"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="selectedResourceModal">
+          Delete this resource?
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body" *ngIf="modalErrorMessage">
+        <p class="text-danger">{{ modalErrorMessage }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="onDeleteSelectedResource()"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
