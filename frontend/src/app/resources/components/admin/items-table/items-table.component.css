@@ -1,0 +1,12 @@
+tr:hover {
+  cursor: pointer;
+}
+
+.tr-zoom:hover {
+  transform: scale(1.025);
+  background-color: #f8f9fa;
+}
+
+.tr-zoom {
+  transition: transform 0.2s; /* Animation */
+}

@@ -2,7 +2,7 @@ package edu.custom.spring.security.security.authentication.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.custom.spring.security.model.exception.ErrorResponse;
-import edu.custom.spring.security.security.SecurityUtils;
+import edu.custom.spring.security.security.util.CookieUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static edu.custom.spring.security.security.SecurityUtils.JWT_COOKIE_NAME;
+import static edu.custom.spring.security.security.util.CookieUtils.JWT_COOKIE_NAME;
 
 /**
  * This filter search for the cookie which hold the access token and if that cookie was found,
@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        SecurityUtils.removeAccessTokenFromCookies(response);
+        CookieUtils.removeAccessTokenFromCookies(response);
         SecurityContextHolder.clearContext();
         final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED, failed.getMessage());
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);

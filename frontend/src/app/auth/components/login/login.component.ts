@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ReplaySubject, take, tap } from 'rxjs';
+import { Subscription, take, tap } from 'rxjs';
+import { SocialAuthConsentUriModel, SocialAuthOption } from '../../models/auth';
 import { AuthenticationService } from '../../services/authentication.service';
 
 @Component({
@@ -10,12 +11,13 @@ import { AuthenticationService } from '../../services/authentication.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  readonly GOOGLE_AUTH_OPTION = SocialAuthOption.GOOGLE;
+  readonly GITHUB_AUTH_OPTION = SocialAuthOption.GITHUB;
 
-  isAuthenticated$: ReplaySubject<boolean>;
+  isAuthenticatedSubscription: Subscription;
   loginForm: FormGroup;
 
   constructor(private formBuilder: FormBuilder, private authenticationService: AuthenticationService, private router: Router) {
-    this.isAuthenticated$ = this.authenticationService.isAuthenticated$;
   }
 
   ngOnInit(): void {
@@ -23,7 +25,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.isAuthenticated$.unsubscribe();
+    this.isAuthenticatedSubscription.unsubscribe();
+  }
+
+  onRedirectToGoogleConsent(option: SocialAuthOption) {
+    this.authenticationService.getSocialAuthRedirectUri(option).subscribe({
+      next: (response: SocialAuthConsentUriModel) => {
+        window.location.href = response.authUri;
+      }
+    })
   }
 
   onLoginFormSubmit(): void {
@@ -36,7 +46,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private initializeComponent() {
-    this.isAuthenticated$.pipe(
+    this.isAuthenticatedSubscription = this.authenticationService.isAuthenticated$.pipe(
       take(1),
       tap(isAuthenticated => {
         if (isAuthenticated) {
@@ -45,7 +55,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         else {
           this.initializeLoginForm();
         }
-      })).subscribe()
+      })).subscribe();
   }
 
   private initializeLoginForm() {

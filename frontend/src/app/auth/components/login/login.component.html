@@ -1,10 +1,14 @@
 <div class="container-fluid d-flex justify-content-center align-items-center">
   <div class="row w-25">
-    <form [formGroup]="loginForm" (ngSubmit)="onLoginFormSubmit()" *ngIf="loginForm">
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="onLoginFormSubmit()"
+      *ngIf="loginForm"
+    >
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input
-          type="text"
+          type="email"
           class="form-control"
           id="username"
           name="principal"
@@ -21,7 +25,33 @@
           formControlName="credentials"
         />
       </div>
-      <button type="submit" class="btn btn-primary">Login</button>
+      <div class="row mt-4">
+        <button type="submit" class="btn btn-primary">Login</button>
+      </div>
+      <div class="row mt-4">
+        <a
+          class="btn btn-lg btn-google btn-block text-uppercase btn-outline shadow"
+          (click)="onRedirectToGoogleConsent(GOOGLE_AUTH_OPTION)"
+        >
+          <img
+            class="social-logo"
+            src="https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png"
+          />
+          Signup Using Google
+        </a>
+      </div>
+      <div class="row mt-4">
+        <a
+          class="btn btn-lg btn-google btn-block text-uppercase btn-outline shadow"
+          (click)="onRedirectToGoogleConsent(GITHUB_AUTH_OPTION)"
+        >
+          <img
+            class="social-logo"
+            src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+          />
+          Signup Using Github
+        </a>
+      </div>
     </form>
   </div>
 </div>

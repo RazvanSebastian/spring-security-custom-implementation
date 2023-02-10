@@ -1,15 +1,27 @@
 package edu.custom.spring.security.controller;
 
+import edu.custom.spring.security.model.entity.dto.security.UserClaimsDto;
+import edu.custom.spring.security.model.entity.security.User;
+import edu.custom.spring.security.model.entity.security.UserInfo;
 import edu.custom.spring.security.security.authentication.credentials.BasicAuthenticationPayload;
+import edu.custom.spring.security.service.security.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
+
+    private final UserService userService;
+
+    public AuthenticationController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity authenticate(@RequestBody BasicAuthenticationPayload authenticationPayload) {
@@ -17,14 +29,13 @@ public class AuthenticationController {
     }
 
     @GetMapping("/csrf")
-    public ResponseEntity getCsrfToken(){
+    public ResponseEntity getCsrfToken() {
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/details")
     public ResponseEntity getUserDetails() {
-        final Authentication authenticatedUser = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok(authenticatedUser);
+        return ResponseEntity.ok(userService.getUserClaims());
     }
 
     @GetMapping("/logout")

@@ -1,27 +1,17 @@
----
-jwt:
-  availability: 300000
-  issuer: test-security-app
-  key:
-    private: "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKP0j5A+zqRCeNfhHUQ+eDOy+r00zs17d8VoSDRWbqvPsG4+8sTWzTqlmkZ7kILDtH/Bxd8p4H8YUAIKK7SGT3dxUY+QpKVxwkQ40yp2V8I0ZBxWAF4MEmx+7wmrx0sN1z4m0AZpy0K3S6KyyAR6Ch7mqnVn+3vBcvGpDzAHF4rbAgMBAAECgYA8aLiYyjtzFDbYO85/vZCmY9S08AceeNaJesHX3tzKGy0DgdgLJKXbbPbp708wjxErXWcdsZ1Q1tFr3vl5e189p5Ib5HxDhSCrmhLZWmtRpd9ddw9NcOmbL/QN6bp73IDNDJkNuTPtlDX2JGM0EYQEpPGOUtoEoFf4T/mhNyL5OQJBAOxsCsKZrEU1wbq6OhNB2Rq4ruCg/Be3L/ApL9z1X4lpfauASxK/VcnSrPbc+zZbwDMjeXmwicWmrNbco+s47RcCQQCxiEhAh4BPZQ2O5XlDXmId892ZXjCfVHtw9U46UT2TKHlstjcfhLadDXnOhT5/p3ojkymkJAABfs49xhmk+tLdAkEA4hVDiOpJifmpI/ZX+PhcM6huWxK3X7pnFkNcqPDghlghu/I4WFouIIzdqEiT1lyRBJYk4RDH/wGvgNyHyDWsywJAeV8nrl40/ZKjq079EW7Ee5/On1zCtxsl7Xr3yWzjQOlJ4mXM19J+mm6tGOEFcnaITSv+KwalrmAIFjmKLL2CTQJAbI+6Llb/ulheAwPFAR/HwB5gGcUCdpYMWFkO1qExM31z1g/bpt3nUVgpGLnVsOn0dyRhDBrWUle7wJrqk2paJw=="
-    public: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCj9I+QPs6kQnjX4R1EPngzsvq9NM7Ne3fFaEg0Vm6rz7BuPvLE1s06pZpGe5CCw7R/wcXfKeB/GFACCiu0hk93cVGPkKSlccJEONMqdlfCNGQcVgBeDBJsfu8Jq8dLDdc+JtAGactCt0uissgEegoe5qp1Z/t7wXLxqQ8wBxeK2wIDAQAB"
----
-security:
-  paths:
-    logout: "/auth/logout"
-    to:
-      skip: "/auth,/auth/csrf,/swagger-ui/**,/v2/api-docs,/swagger-resources,/swagger-resources/configuration/ui,/swagger-resources/configuration/security"
----
-spring:
-  datasource:
-    driverClassName: org.h2.Driver
-    password: password
-    url: "jdbc:h2:file:~/test2;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE"
-    username: sa
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate.ddl-auto: create
----
-server:
-  servlet:
-    context-path: /api
+spring.profiles.active: security-auth-google,security-auth-github,security-jwt
+
+server.servlet.context-path: /api
+
+security.paths.logout: "/auth/logout"
+security.paths.auth.to.skip: "/auth,/github-auth/**,/google-auth/**,/auth/csrf,/swagger-ui/**,/v2/api-docs,/swagger-resources,/swagger-resources/configuration/ui,/swagger-resources/configuration/security,/h2-console/**"
+security.paths.csrf.to.skip: "/h2-console/**,/swagger-ui/**,/google-auth/consent/callback,/github-auth/consent/callback"
+
+spring.datasource.driverClassName: org.h2.Driver
+spring.datasource.password: password
+spring.datasource.url: "jdbc:h2:file:~/test;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;"
+spring.datasource.username: sa
+spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto: create-drop
+spring.h2.console.enabled: true
+spring.h2.console.path: /h2-console
+

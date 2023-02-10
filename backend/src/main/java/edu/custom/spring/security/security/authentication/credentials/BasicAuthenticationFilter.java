@@ -2,7 +2,7 @@ package edu.custom.spring.security.security.authentication.credentials;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.custom.spring.security.model.exception.ErrorResponse;
-import edu.custom.spring.security.security.SecurityUtils;
+import edu.custom.spring.security.security.util.CookieUtils;
 import edu.custom.spring.security.security.jwt.service.JwtHandlerService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -43,12 +43,12 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationProcessingF
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws ServletException, IOException {
         final String jwtToken = jwtHandlerService.generateAccessToken(authResult);
-        SecurityUtils.addAccessTokenToCookies(response, jwtToken);
+        CookieUtils.addAccessTokenToCookies(response, jwtToken);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        SecurityUtils.removeAccessTokenFromCookies(response);
+        CookieUtils.removeAccessTokenFromCookies(response);
         SecurityContextHolder.clearContext();
         final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED, failed.getMessage());
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
