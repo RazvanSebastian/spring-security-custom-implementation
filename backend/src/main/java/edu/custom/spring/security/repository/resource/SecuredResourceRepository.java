@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface SecuredResourceRepository extends JpaRepository<SecuredResource, Long> {
 
-    @Query("SELECT resource FROM SecuredResource resource JOIN FETCH resource.user user WHERE user.id = :user_id")
+    @Query("SELECT resource FROM SecuredResource resource WHERE resource.user.id = :user_id")
     List<SecuredResource> findAll(@Param("user_id") Long userId);
 
     @Query(value = "SELECT resource FROM SecuredResource resource WHERE resource.value LIKE %:searchedValue% AND resource.audit.createdBy LIKE %:userName%")

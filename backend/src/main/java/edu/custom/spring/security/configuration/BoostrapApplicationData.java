@@ -89,7 +89,7 @@ public class BoostrapApplicationData implements ApplicationListener<ContextRefre
     }
 
     private void addSecuredResources(User user) {
-        List<SecuredResource> securedResources = IntStream.rangeClosed(0, 100)
+        List<SecuredResource> securedResources = IntStream.rangeClosed(0, 5)
                 .mapToObj(intValue -> {
                     SecuredResource securedResource = new SecuredResource();
                     securedResource.setValue("item" + intValue);
